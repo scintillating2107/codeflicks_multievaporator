@@ -2,35 +2,86 @@
   "version": 2.0,
   "questions": [
     {
-      "question": "This is a Sample Question 1?",
+      "question": "What is the primary purpose of using multiple effects in an evaporator system?",
       "answers": {
-        "a": "answer1",
-        "b": "answer2",
-        "c": "answer3",
-        "d": "answer4"
+        "a": "To reduce the boiling point of water",
+        "b": "To increase the pressure in each effect",
+        "c": "To improve energy efficiency by reusing steam",
+        "d": "To increase the feed flow rate"
       },
       "explanations": {
-        "a": "Explanation 1  <a href='www.google.com'>here</a>",
-        "b": "Explanation 2",
-        "c": "Explanation 2",
-        "d": "Explanation 2"
+        "a": "Boiling point does not significantly change with multiple effects.",
+        "b": "Pressure usually decreases in successive effects.",
+        "c": "Correct! Multiple effects reuse vapor to conserve energy. <a href='https://en.wikipedia.org/wiki/Multiple-effect_evaporator'>Learn more</a>",
+        "d": "Feed flow rate is a design parameter, not the purpose."
       },
-      "correctAnswer": "a",
+      "correctAnswer": "c",
       "difficulty": "beginner"
     },
     {
-      "question": "This is a Sample Question 2?",
+      "question": "Steam economy is defined as:",
       "answers": {
-        "a": "answer1",
-        "b": "answer2",
-        "c": "answer3",
-        "d": "answer4"
+        "a": "The amount of steam required per unit of product",
+        "b": "The amount of vapor produced per unit of steam consumed",
+        "c": "The rate of heat transfer in each effect",
+        "d": "The cost savings in a steam plant"
       },
       "explanations": {
-        "a": "Explanation 1  <a href='www.google.com'>here</a>",
-        "b": "Explanation 2",
-        "c": "Explanation 2",
-        "d": "Explanation 2"
+        "a": "This is an inverse understanding of steam economy.",
+        "b": "Correct! It measures efficiency of steam usage. <a href='https://www.sciencedirect.com/topics/engineering/steam-economy'>More info</a>",
+        "c": "Heat transfer rate is different from economy.",
+        "d": "Cost savings can be a result, but not the definition."
+      },
+      "correctAnswer": "b",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "In a forward-feed MEE, the feed and steam flow:",
+      "answers": {
+        "a": "In opposite directions",
+        "b": "In the same direction",
+        "c": "Are both constant and parallel",
+        "d": "Are irrelevant to each other"
+      },
+      "explanations": {
+        "a": "This is characteristic of backward-feed MEE.",
+        "b": "Correct! In forward feed, feed and steam flow from first to last effect. <a href='https://www.thermalprocessing.com/articles/evaporation-systems/'>Reference</a>",
+        "c": "Not necessarily parallel or constant.",
+        "d": "Their direction greatly impacts energy efficiency."
+      },
+      "correctAnswer": "b",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "What is the effect of increasing the number of effects in a multi-effect evaporator?",
+      "answers": {
+        "a": "Decreases steam economy",
+        "b": "Increases energy consumption",
+        "c": "Decreases vapor output",
+        "d": "Increases overall energy efficiency"
+      },
+      "explanations": {
+        "a": "Steam economy usually increases, not decreases.",
+        "b": "Overall energy consumption reduces.",
+        "c": "More effects mean more vapor is reused.",
+        "d": "Correct! More effects reuse steam more efficiently. <a href='https://chemengonline.com/design-multiple-effect-evaporators/'>Learn more</a>"
+      },
+      "correctAnswer": "d",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "Which of the following parameters is essential for calculating the overall heat transfer coefficient in MEE?",
+      "answers": {
+        "a": "Only pressure",
+        "b": "Feed viscosity",
+        "c": "Temperature difference and heat transfer area",
+        "d": "Color of the liquid"
+      },
+      "explanations": {
+        "a": "Pressure affects boiling point but not directly used in U calculation.",
+        "b": "It affects flow but not the main calculation input.",
+        "c": "Correct! U = Q / (A × ΔT). <a href='https://www.engineeringtoolbox.com/overall-heat-transfer-coefficient-d_284.html'>Formula reference</a>",
+        "d": "Color is irrelevant in heat transfer calculations."
       },
       "correctAnswer": "c",
       "difficulty": "beginner"
