@@ -1,13 +1,967 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-	<!-- Add CSS at the head of HTML file -->
-    <link rel="stylesheet" href="./css/main.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Effect Evaporator Virtual Lab</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f8ff;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #3498db;
+        }
+        h2, h3 {
+            color: #2980b9;
+        }
+        .simulator {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .setup {
+            flex: 3;
+            min-width: 700px;
+            border: 2px solid #bdc3c7;
+            padding: 15px;
+            border-radius: 8px;
+            background-color: #f8fafc;
+            position: relative;
+            height: 500px;
+            overflow: hidden;
+        }
+        .controls {
+            flex: 1;
+            min-width: 300px;
+            border: 2px solid #bdc3c7;
+            padding: 15px;
+            border-radius: 8px;
+            background-color: #f8fafc;
+        }
+        .results {
+            width: 100%;
+            border: 2px solid #bdc3c7;
+            padding: 15px;
+            border-radius: 8px;
+            background-color: #e8f4f8;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+        button:disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+        }
+        input[type="range"] {
+            width: 80%;
+            margin: 10px 0;
+        }
+        select, input {
+            padding: 8px;
+            margin: 5px 0;
+            border: 1px solid #bdc3c7;
+            border-radius: 4px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #3498db;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        /* Equipment styling */
+        .equipment {
+            position: absolute;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .equipment:hover {
+            filter: brightness(1.1);
+            transform: scale(1.02);
+        }
+        
+        .effect {
+            width: 120px;
+            height: 200px;
+            background-color: #b3d9ff;
+            border: 2px solid #2980b9;
+            border-radius: 60px 60px 10px 10px;
+            bottom: 100px;
+        }
+        #effect1 { left: 100px; }
+        #effect2 { left: 300px; }
+        #effect3 { left: 500px; }
+        
+        .steam-gen {
+            width: 100px;
+            height: 150px;
+            background-color: #d1d1d1;
+            border: 2px solid #666;
+            bottom: 100px;
+            left: 20px;
+        }
+        .steam-gen-top {
+            position: absolute;
+            width: 60px;
+            height: 30px;
+            background-color: #a1a1a1;
+            border: 2px solid #666;
+            top: -30px;
+            left: 20px;
+        }
+        
+        .condenser {
+            width: 120px;
+            height: 80px;
+            background-color: #e6e6e6;
+            border: 2px solid #666;
+            top: 50px;
+            left: 300px;
+        }
+        .condenser-line {
+            position: absolute;
+            width: 100px;
+            height: 2px;
+            background-color: #333;
+            left: 10px;
+        }
+        #condenser-line1 { top: 20px; }
+        #condenser-line2 { top: 40px; }
+        #condenser-line3 { top: 60px; }
+        
+        /* Pipes and valves */
+        .pipe {
+            position: absolute;
+            background-color: #666;
+            z-index: -1;
+            cursor: pointer;
+        }
+        .pipe:hover {
+            background-color: #888;
+        }
+        .valve {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: #ff4444;
+            border-radius: 50%;
+            border: 2px solid #990000;
+            z-index: 1;
+            cursor: pointer;
+        }
+        .valve:hover {
+            background-color: #ff6666;
+        }
+        
+        /* Hover labels */
+        .hover-label {
+            position: absolute;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 14px;
+            pointer-events: none;
+            z-index: 10;
+            white-space: nowrap;
+            transform: translateY(-30px);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .equipment:hover .hover-label,
+        .pipe:hover .hover-label,
+        .valve:hover .hover-label {
+            opacity: 1;
+        }
+        
+        /* Flow animation */
+        .flow {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: rgba(0, 180, 255, 0.8);
+            border-radius: 50%;
+            animation: flowAnimation 2s linear infinite;
+            z-index: 0;
+        }
+        @keyframes flowAnimation {
+            0% { transform: translateY(0); opacity: 0; }
+            20% { opacity: 1; }
+            80% { opacity: 1; }
+            100% { transform: translateY(-100px); opacity: 0; }
+        }
+        
+        /* Steam animation */
+        .steam {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            animation: steamAnimation 4s linear infinite;
+        }
+        @keyframes steamAnimation {
+            0% { transform: translateY(0) scale(1); opacity: 0; }
+            20% { opacity: 0.8; }
+            50% { transform: translateY(-50px) scale(1.5); }
+            100% { transform: translateY(-100px) scale(2); opacity: 0; }
+        }
+        
+        /* Gauges */
+        .gauge {
+            position: absolute;
+            background: white;
+            border: 2px solid #333;
+            padding: 5px;
+            font-size: 12px;
+            border-radius: 5px;
+            font-weight: bold;
+            min-width: 80px;
+            text-align: center;
+        }
+        .temp-gauge {
+            background-color: #ffdddd;
+            color: #cc0000;
+        }
+        .press-gauge {
+            background-color: #ddffdd;
+            color: #006600;
+        }
+        
+        /* Progress bar */
+        .progress-container {
+            width: 100%;
+            background-color: #e0e0e0;
+            margin: 15px 0;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        #progressBar {
+            width: 0%;
+            height: 30px;
+            background: linear-gradient(to right, #4CAF50, #2E8B57);
+            text-align: center;
+            line-height: 30px;
+            color: white;
+            font-weight: bold;
+            transition: width 0.3s;
+        }
+        
+        /* Status message */
+        #statusMessage {
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #f0f0f0;
+            border-left: 5px solid #3498db;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        
+        /* Control groups */
+        .control-group {
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: white;
+            border-radius: 5px;
+        }
+        
+        /* Feed and product tanks */
+        .feed-tank, .product-tank {
+            position: absolute;
+            width: 80px;
+            height: 120px;
+            background-color: #b3d9ff;
+            border: 2px solid #2980b9;
+            border-radius: 10px;
+            bottom: 100px;
+        }
+        .feed-tank { left: 650px; }
+        .product-tank { left: 750px; }
+        
+        /* Tooltip for detailed information */
+        .tooltip {
+            position: absolute;
+            background-color: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 14px;
+            max-width: 200px;
+            z-index: 100;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .equipment:hover .tooltip,
+        .pipe:hover .tooltip,
+        .valve:hover .tooltip {
+            opacity: 1;
+        }
+    </style>
 </head>
 <body>
-		<!-- Your code goes here-->
+    <div class="container">
+        <h1>Multi-Effect Evaporator Virtual Lab</h1>
+        
+        <div class="simulator">
+            <div class="setup" id="experimentalSetup">
+                <!-- Steam Generator -->
+                <div class="equipment steam-gen">
+                    <div class="steam-gen-top"></div>
+                    <div id="steamAnimation"></div>
+                    <div class="hover-label">Steam Generator</div>
+                    <div class="tooltip" style="bottom: 100%; left: 50%; transform: translateX(-50%);">
+                        <strong>Steam Generator</strong><br>
+                        Produces steam at specified pressure<br>
+                        Current Pressure: <span id="tooltip-steam-pressure">2.0</span> bar
+                    </div>
+                </div>
+                
+                <!-- Effects -->
+                <div class="equipment effect" id="effect1">
+                    <div class="gauge temp-gauge" style="top: -30px; left: 10px;">T1: 120°C</div>
+                    <div class="gauge press-gauge" style="top: -30px; right: 10px;">P1: 2.0 bar</div>
+                    <div class="hover-label">Effect 1</div>
+                    <div class="tooltip" style="bottom: 100%; left: 50%; transform: translateX(-50%);">
+                        <strong>First Effect</strong><br>
+                        Temperature: <span id="tooltip-t1">120</span>°C<br>
+                        Pressure: <span id="tooltip-p1">2.0</span> bar<br>
+                        Concentration: <span id="tooltip-c1">15</span>%
+                    </div>
+                </div>
+                <div class="equipment effect" id="effect2">
+                    <div class="gauge temp-gauge" style="top: -30px; left: 10px;">T2: 95°C</div>
+                    <div class="gauge press-gauge" style="top: -30px; right: 10px;">P2: 0.8 bar</div>
+                    <div class="hover-label">Effect 2</div>
+                    <div class="tooltip" style="bottom: 100%; left: 50%; transform: translateX(-50%);">
+                        <strong>Second Effect</strong><br>
+                        Temperature: <span id="tooltip-t2">95</span>°C<br>
+                        Pressure: <span id="tooltip-p2">0.8</span> bar<br>
+                        Concentration: <span id="tooltip-c2">25</span>%
+                    </div>
+                </div>
+                <div class="equipment effect" id="effect3">
+                    <div class="gauge temp-gauge" style="top: -30px; left: 10px;">T3: 80°C</div>
+                    <div class="gauge press-gauge" style="top: -30px; right: 10px;">P3: 0.4 bar</div>
+                    <div class="hover-label">Effect 3</div>
+                    <div class="tooltip" style="bottom: 100%; left: 50%; transform: translateX(-50%);">
+                        <strong>Third Effect</strong><br>
+                        Temperature: <span id="tooltip-t3">80</span>°C<br>
+                        Pressure: <span id="tooltip-p3">0.4</span> bar<br>
+                        Concentration: <span id="tooltip-c3">40</span>%
+                    </div>
+                </div>
+                
+                <!-- Condenser -->
+                <div class="equipment condenser">
+                    <div class="condenser-line" id="condenser-line1"></div>
+                    <div class="condenser-line" id="condenser-line2"></div>
+                    <div class="condenser-line" id="condenser-line3"></div>
+                    <div class="hover-label">Condenser</div>
+                    <div class="tooltip" style="bottom: 100%; left: 50%; transform: translateX(-50%);">
+                        <strong>Condenser</strong><br>
+                        Cools and condenses vapor from last effect<br>
+                        Cooling water temperature: 25°C
+                    </div>
+                </div>
+                
+                <!-- Feed and Product Tanks -->
+                <div class="equipment feed-tank">
+                    <div class="hover-label">Feed Tank</div>
+                    <div class="tooltip" style="bottom: 100%; left: 50%; transform: translateX(-50%);">
+                        <strong>Feed Tank</strong><br>
+                        Contains feed solution<br>
+                        Feed rate: <span id="tooltip-feed-rate">100</span> kg/hr<br>
+                        Temperature: <span id="tooltip-feed-temp">25</span>°C
+                    </div>
+                </div>
+                <div class="equipment product-tank">
+                    <div class="hover-label">Product Tank</div>
+                    <div class="tooltip" style="bottom: 100%; left: 50%; transform: translateX(-50%);">
+                        <strong>Product Tank</strong><br>
+                        Collects concentrated product<br>
+                        Current volume: <span id="tooltip-product-vol">50</span> kg
+                    </div>
+                </div>
+                
+                <!-- Pipes -->
+                <div class="pipe" style="width: 80px; height: 10px; bottom: 180px; left: 120px;">
+                    <div class="hover-label">Steam Pipe</div>
+                    <div class="tooltip" style="bottom: 100%; left: 50%; transform: translateX(-50%);">
+                        <strong>Steam Supply Pipe</strong><br>
+                        Carries steam to first effect<br>
+                        Flow rate: <span id="tooltip-steam-flow">50</span> kg/hr
+                    </div>
+                </div>
+                <div class="pipe" style="width: 10px; height: 80px; bottom: 180px; left: 220px;">
+                    <div class="hover-label">Vapor Pipe</div>
+                </div>
+                <div class="pipe" style="width: 80px; height: 10px; bottom: 180px; left: 320px;">
+                    <div class="hover-label">Vapor Pipe</div>
+                </div>
+                <div class="pipe" style="width: 10px; height: 80px; bottom: 180px; left: 420px;">
+                    <div class="hover-label">Vapor Pipe</div>
+                </div>
+                <div class="pipe" style="width: 80px; height: 10px; bottom: 180px; left: 520px;">
+                    <div class="hover-label">Vapor Pipe</div>
+                </div>
+                <div class="pipe" style="width: 10px; height: 100px; top: 130px; left: 360px;">
+                    <div class="hover-label">Condensate Pipe</div>
+                </div>
+                <div class="pipe" style="width: 100px; height: 10px; top: 130px; left: 360px;">
+                    <div class="hover-label">Condensate Pipe</div>
+                </div>
+                
+                <!-- Valves -->
+                <div class="valve" style="bottom: 175px; left: 210px;">
+                    <div class="hover-label">Control Valve</div>
+                    <div class="tooltip" style="bottom: 100%; left: 50%; transform: translateX(-50%);">
+                        <strong>Control Valve</strong><br>
+                        Regulates steam flow to first effect<br>
+                        Current position: <span id="tooltip-valve1">100</span>%
+                    </div>
+                </div>
+                <div class="valve" style="bottom: 175px; left: 410px;">
+                    <div class="hover-label">Control Valve</div>
+                    <div class="tooltip" style="bottom: 100%; left: 50%; transform: translateX(-50%);">
+                        <strong>Control Valve</strong><br>
+                        Regulates vapor flow to second effect<br>
+                        Current position: <span id="tooltip-valve2">100</span>%
+                    </div>
+                </div>
+                
+                <!-- Flow indicators -->
+                <div id="steamFlow"></div>
+                <div id="vaporFlow1"></div>
+                <div id="vaporFlow2"></div>
+                <div id="condensateFlow"></div>
+                
+                <!-- Progress bar -->
+                <div class="progress-container">
+                    <div id="progressBar">0%</div>
+                </div>
+            </div>
+            
+            <div class="controls">
+                <div class="control-group">
+                    <h2>Experiment Controls</h2>
+                    <button id="startBtn">Start Experiment</button>
+                    <button id="stopBtn" disabled>Pause</button>
+                    <button id="resetBtn">Reset</button>
+                </div>
+                
+                <div class="control-group">
+                    <h3>System Configuration</h3>
+                    <label>Number of Effects:</label>
+                    <select id="numEffects">
+                        <option value="2">2 Effects</option>
+                        <option value="3" selected>3 Effects</option>
+                    </select>
+                </div>
+                
+                <div class="control-group">
+                    <h3>Operating Parameters</h3>
+                    <label>Feed Rate: <span id="feedValue">100</span> kg/hr</label>
+                    <input type="range" id="feedInput" min="50" max="500" value="100" step="10">
+                    
+                    <label>Steam Pressure: <span id="steamPressValue">2.0</span> bar</label>
+                    <input type="range" id="steamPressInput" min="1" max="5" value="2.0" step="0.1">
+                    
+                    <label>Feed Temperature: <span id="feedTempValue">25</span>°C</label>
+                    <input type="range" id="feedTempInput" min="20" max="80" value="25" step="1">
+                    
+                    <label>Feed Concentration: <span id="feedConcValue">10</span>%</label>
+                    <input type="range" id="feedConcInput" min="5" max="20" value="10" step="1">
+                </div>
+                
+                <div class="control-group">
+                    <h3>Simulation Settings</h3>
+                    <label>Simulation Speed</label>
+                    <input type="range" id="simSpeed" min="1" max="10" value="5">
+                </div>
+                
+                <div class="control-group">
+                    <h3>System Status</h3>
+                    <div id="statusMessage">System ready for experiment</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="results">
+            <h2>Results and Performance Data</h2>
+            
+            <div>
+                <h3>Evaporator Performance</h3>
+                <table>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Effect 1</th>
+                        <th>Effect 2</th>
+                        <th>Effect 3</th>
+                        <th>Total</th>
+                    </tr>
+                    <tr>
+                        <td>Evaporation Rate (kg/hr)</td>
+                        <td id="evap1">30.0</td>
+                        <td id="evap2">15.0</td>
+                        <td id="evap3">5.0</td>
+                        <td id="totalEvap">50.0</td>
+                    </tr>
+                    <tr>
+                        <td>Temperature (°C)</td>
+                        <td id="temp1">120.0</td>
+                        <td id="temp2">95.0</td>
+                        <td id="temp3">80.0</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>Pressure (bar)</td>
+                        <td id="press1">2.0</td>
+                        <td id="press2">0.8</td>
+                        <td id="press3">0.4</td>
+                        <td>-</td>
+                    </tr>
+                    <tr>
+                        <td>Concentration (%)</td>
+                        <td id="conc1">15.0</td>
+                        <td id="conc2">25.0</td>
+                        <td id="conc3">40.0</td>
+                        <td>-</td>
+                    </tr>
+                </table>
+                
+                <h3>System Performance</h3>
+                <table>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Value</th>
+                        <th>Unit</th>
+                    </tr>
+                    <tr>
+                        <td>Steam Consumption</td>
+                        <td id="steamUsed">50.0</td>
+                        <td>kg/hr</td>
+                    </tr>
+                    <tr>
+                        <td>Steam Economy</td>
+                        <td id="steamEcon">1.0</td>
+                        <td>kg/kg</td>
+                    </tr>
+                    <tr>
+                        <td>Heat Transfer Coefficient</td>
+                        <td id="heatCoeff">763.89</td>
+                        <td>W/m²·K</td>
+                    </tr>
+                    <tr>
+                        <td>Energy Efficiency</td>
+                        <td id="energyEff">75.2</td>
+                        <td>%</td>
+                    </tr>
+                    <tr>
+                        <td>Product Concentration</td>
+                        <td id="productConc">40.0</td>
+                        <td>%</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
 
-	<!-- Add JS at the bottom of HTML file --> 
-        <script src="./js/main.js"></script>
+    <script>
+        // Simulation variables
+        let isRunning = false;
+        let simulationInterval;
+        let progress = 0;
+        let simSpeed = 5;
+        let productVolume = 0;
+        
+        // DOM elements
+        const startBtn = document.getElementById('startBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const numEffects = document.getElementById('numEffects');
+        const feedInput = document.getElementById('feedInput');
+        const steamPressInput = document.getElementById('steamPressInput');
+        const feedTempInput = document.getElementById('feedTempInput');
+        const feedConcInput = document.getElementById('feedConcInput');
+        const simSpeedInput = document.getElementById('simSpeed');
+        const statusMessage = document.getElementById('statusMessage');
+        const progressBar = document.getElementById('progressBar');
+        
+        // Display elements
+        const feedValue = document.getElementById('feedValue');
+        const steamPressValue = document.getElementById('steamPressValue');
+        const feedTempValue = document.getElementById('feedTempValue');
+        const feedConcValue = document.getElementById('feedConcValue');
+        
+        // Initialize the experimental setup
+        function initSetup() {
+            updateParameters();
+            createFlowParticles();
+            createSteamAnimation();
+            updateTooltips();
+        }
+        
+        // Create animated flow particles
+        function createFlowParticles() {
+            const steamFlow = document.getElementById('steamFlow');
+            const vaporFlow1 = document.getElementById('vaporFlow1');
+            const vaporFlow2 = document.getElementById('vaporFlow2');
+            const condensateFlow = document.getElementById('condensateFlow');
+            
+            // Clear existing particles
+            steamFlow.innerHTML = '';
+            vaporFlow1.innerHTML = '';
+            vaporFlow2.innerHTML = '';
+            condensateFlow.innerHTML = '';
+            
+            // Create steam flow particles
+            for (let i = 0; i < 10; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'flow';
+                particle.style.left = '120px';
+                particle.style.bottom = '180px';
+                particle.style.animationDelay = `${i * 0.2}s`;
+                steamFlow.appendChild(particle);
+            }
+            
+            // Create vapor flow particles between effects
+            if (isRunning) {
+                for (let i = 0; i < 8; i++) {
+                    const particle1 = document.createElement('div');
+                    particle1.className = 'flow';
+                    particle1.style.left = '320px';
+                    particle1.style.bottom = '180px';
+                    particle1.style.animationDelay = `${i * 0.25}s`;
+                    vaporFlow1.appendChild(particle1);
+                    
+                    if (numEffects.value === '3') {
+                        const particle2 = document.createElement('div');
+                        particle2.className = 'flow';
+                        particle2.style.left = '520px';
+                        particle2.style.bottom = '180px';
+                        particle2.style.animationDelay = `${i * 0.3}s`;
+                        vaporFlow2.appendChild(particle2);
+                    }
+                }
+                
+                // Create condensate flow
+                for (let i = 0; i < 6; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'flow';
+                    particle.style.left = '360px';
+                    particle.style.top = '130px';
+                    particle.style.animationDelay = `${i * 0.3}s`;
+                    particle.style.animationName = 'flowAnimationRight';
+                    condensateFlow.appendChild(particle);
+                }
+            }
+        }
+        
+        // Create steam animation from steam generator
+        function createSteamAnimation() {
+            const steamAnim = document.getElementById('steamAnimation');
+            steamAnim.innerHTML = '';
+            
+            if (isRunning) {
+                for (let i = 0; i < 6; i++) {
+                    const steam = document.createElement('div');
+                    steam.className = 'steam';
+                    steam.style.left = `${30 + Math.random() * 40}px`;
+                    steam.style.bottom = '150px';
+                    steam.style.animationDelay = `${i * 0.6}s`;
+                    steam.style.opacity = '0';
+                    steamAnim.appendChild(steam);
+                }
+            }
+        }
+        
+        // Update tooltip values
+        function updateTooltips() {
+            document.getElementById('tooltip-steam-pressure').textContent = steamPressInput.value;
+            document.getElementById('tooltip-t1').textContent = document.getElementById('temp1').textContent;
+            document.getElementById('tooltip-t2').textContent = document.getElementById('temp2').textContent;
+            document.getElementById('tooltip-t3').textContent = document.getElementById('temp3').textContent;
+            document.getElementById('tooltip-p1').textContent = document.getElementById('press1').textContent;
+            document.getElementById('tooltip-p2').textContent = document.getElementById('press2').textContent;
+            document.getElementById('tooltip-p3').textContent = document.getElementById('press3').textContent;
+            document.getElementById('tooltip-c1').textContent = document.getElementById('conc1').textContent;
+            document.getElementById('tooltip-c2').textContent = document.getElementById('conc2').textContent;
+            document.getElementById('tooltip-c3').textContent = document.getElementById('conc3').textContent;
+            document.getElementById('tooltip-feed-rate').textContent = feedInput.value;
+            document.getElementById('tooltip-feed-temp').textContent = feedTempInput.value;
+            document.getElementById('tooltip-steam-flow').textContent = (feedInput.value * 0.5).toFixed(1);
+            document.getElementById('tooltip-product-vol').textContent = productVolume.toFixed(1);
+        }
+        
+        // Update system parameters based on inputs
+        function updateParameters() {
+            const feedRate = parseFloat(feedInput.value);
+            const steamPress = parseFloat(steamPressInput.value);
+            const feedTemp = parseFloat(feedTempInput.value);
+            const feedConc = parseFloat(feedConcInput.value);
+            const effects = parseInt(numEffects.value);
+            
+            // Update display values
+            feedValue.textContent = feedRate;
+            steamPressValue.textContent = steamPress.toFixed(1);
+            feedTempValue.textContent = feedTemp;
+            feedConcValue.textContent = feedConc;
+            
+            // Calculate effect temperatures based on steam pressure
+            const temp1 = 90 + (steamPress * 15);
+            const temp2 = temp1 - 25;
+            const temp3 = temp2 - 15;
+            
+            // Calculate pressures
+            const press1 = steamPress;
+            const press2 = steamPress * 0.4;
+            const press3 = steamPress * 0.2;
+            
+            // Calculate concentrations
+            const conc1 = feedConc * (1 + progress/1000);
+            const conc2 = conc1 * (1.8 + progress/1500);
+            const conc3 = effects > 2 ? conc2 * (1.6 + progress/2000) : 0;
+            
+            // Calculate evaporation rates
+            const evap1 = feedRate * 0.3 * (1 + progress/500);
+            const evap2 = feedRate * 0.15 * (1 + progress/400);
+            const evap3 = effects > 2 ? feedRate * 0.05 * (1 + progress/300) : 0;
+            const totalEvap = evap1 + evap2 + evap3;
+            const steamUsed = feedRate * 0.5 * (1 - progress/2000);
+            const steamEcon = totalEvap / steamUsed;
+            
+            // Update product volume
+            if (isRunning) {
+                productVolume += totalEvap * (simSpeed / 500);
+            }
+            
+            // Heat transfer calculation
+            const Q = steamUsed * 2200; // kJ/hr
+            const A = 4; // m²
+            const deltaT = 10 + (progress/10); // °C
+            const U_kJ = Q / (A * deltaT); // kJ/hr·m²·°C
+            const U = U_kJ * 1000 / 3600; // Convert to W/m²·K
+            
+            // Energy efficiency
+            const energyEff = 70 + (progress/3) + (steamPress * 2);
+            
+            // Product concentration
+            const productConc = effects > 2 ? conc3 : conc2;
+            
+            // Update temperature and pressure gauges
+            document.querySelectorAll('.temp-gauge').forEach(gauge => {
+                if (gauge.textContent.includes('T1')) gauge.textContent = `T1: ${temp1.toFixed(1)}°C`;
+                if (gauge.textContent.includes('T2')) gauge.textContent = `T2: ${temp2.toFixed(1)}°C`;
+                if (gauge.textContent.includes('T3') && effects > 2) gauge.textContent = `T3: ${temp3.toFixed(1)}°C`;
+            });
+            
+            document.querySelectorAll('.press-gauge').forEach(gauge => {
+                if (gauge.textContent.includes('P1')) gauge.textContent = `P1: ${press1.toFixed(1)} bar`;
+                if (gauge.textContent.includes('P2')) gauge.textContent = `P2: ${press2.toFixed(1)} bar`;
+                if (gauge.textContent.includes('P3') && effects > 2) gauge.textContent = `P3: ${press3.toFixed(1)} bar`;
+            });
+            
+            // Update results table
+            document.getElementById('temp1').textContent = temp1.toFixed(1);
+            document.getElementById('temp2').textContent = temp2.toFixed(1);
+            document.getElementById('temp3').textContent = effects > 2 ? temp3.toFixed(1) : '-';
+            
+            document.getElementById('press1').textContent = press1.toFixed(1);
+            document.getElementById('press2').textContent = press2.toFixed(1);
+            document.getElementById('press3').textContent = effects > 2 ? press3.toFixed(1) : '-';
+            
+            document.getElementById('conc1').textContent = conc1.toFixed(1);
+            document.getElementById('conc2').textContent = conc2.toFixed(1);
+            document.getElementById('conc3').textContent = effects > 2 ? conc3.toFixed(1) : '-';
+            
+            document.getElementById('evap1').textContent = evap1.toFixed(1);
+            document.getElementById('evap2').textContent = evap2.toFixed(1);
+            document.getElementById('evap3').textContent = effects > 2 ? evap3.toFixed(1) : '-';
+            document.getElementById('totalEvap').textContent = totalEvap.toFixed(1);
+            
+            document.getElementById('steamUsed').textContent = steamUsed.toFixed(1);
+            document.getElementById('steamEcon').textContent = steamEcon.toFixed(2);
+            document.getElementById('heatCoeff').textContent = U.toFixed(2);
+            document.getElementById('energyEff').textContent = energyEff.toFixed(1);
+            document.getElementById('productConc').textContent = productConc.toFixed(1);
+            
+            // Show/hide third effect
+            document.getElementById('effect3').style.display = effects > 2 ? 'block' : 'none';
+            document.querySelector('.pipe[style*="left: 520px;"]').style.display = effects > 2 ? 'block' : 'none';
+            document.querySelector('.temp-gauge[style*="left: 10px;"]:last-child').style.display = effects > 2 ? 'block' : 'none';
+            document.querySelector('.press-gauge[style*="right: 10px;"]:last-child').style.display = effects > 2 ? 'block' : 'none';
+            
+            // Update tooltips
+            updateTooltips();
+        }
+        
+        // Run the simulation
+        function runSimulation() {
+            if (progress >= 100) {
+                progress = 100;
+                clearInterval(simulationInterval);
+                statusMessage.textContent = "Experiment completed! System at steady state.";
+                stopBtn.disabled = true;
+                startBtn.disabled = true;
+                return;
+            }
+            
+            progress += simSpeed;
+            if (progress > 100) progress = 100;
+            
+            progressBar.style.width = `${progress}%`;
+            progressBar.textContent = `${progress}%`;
+            
+            // Update status message based on progress
+            if (progress < 20) {
+                statusMessage.textContent = "Initializing system...";
+            } else if (progress < 40) {
+                statusMessage.textContent = "Heating up first effect...";
+                if (progress > 30) createSteamAnimation();
+            } else if (progress < 60) {
+                statusMessage.textContent = "Second effect reaching operating temperature...";
+            } else if (progress < 80) {
+                statusMessage.textContent = "Third effect stabilizing...";
+            } else if (progress < 95) {
+                statusMessage.textContent = "System approaching steady state...";
+            } else {
+                statusMessage.textContent = "System at steady state operation";
+            }
+            
+            // Update parameters gradually
+            updateParameters();
+            
+            // Create new flow particles occasionally
+            if (progress % 15 === 0) {
+                createFlowParticles();
+            }
+        }
+        
+        // Event listeners
+        startBtn.addEventListener('click', () => {
+            isRunning = true;
+            startBtn.disabled = true;
+            stopBtn.disabled = false;
+            resetBtn.disabled = true;
+            statusMessage.textContent = "Experiment started! Initializing system...";
+            
+            // Create flow animations
+            createFlowParticles();
+            createSteamAnimation();
+            
+            // Start simulation
+            simulationInterval = setInterval(runSimulation, 200);
+        });
+        
+        stopBtn.addEventListener('click', () => {
+            isRunning = false;
+            clearInterval(simulationInterval);
+            startBtn.disabled = false;
+            stopBtn.disabled = true;
+            resetBtn.disabled = false;
+            statusMessage.textContent = "Experiment paused";
+        });
+        
+        resetBtn.addEventListener('click', () => {
+            isRunning = false;
+            clearInterval(simulationInterval);
+            progress = 0;
+            productVolume = 0;
+            progressBar.style.width = "0%";
+            progressBar.textContent = "0%";
+            startBtn.disabled = false;
+            stopBtn.disabled = true;
+            statusMessage.textContent = "System ready for experiment";
+            updateParameters();
+            createFlowParticles();
+            createSteamAnimation();
+        });
+        
+        // Input change listeners
+        numEffects.addEventListener('change', () => {
+            updateParameters();
+            createFlowParticles();
+        });
+        
+        feedInput.addEventListener('input', () => {
+            feedValue.textContent = feedInput.value;
+            if (!isRunning) updateParameters();
+        });
+        
+        steamPressInput.addEventListener('input', () => {
+            steamPressValue.textContent = steamPressInput.value;
+            if (!isRunning) updateParameters();
+        });
+        
+        feedTempInput.addEventListener('input', () => {
+            feedTempValue.textContent = feedTempInput.value;
+            if (!isRunning) updateParameters();
+        });
+        
+        feedConcInput.addEventListener('input', () => {
+            feedConcValue.textContent = feedConcInput.value;
+            if (!isRunning) updateParameters();
+        });
+        
+        simSpeedInput.addEventListener('input', () => {
+            simSpeed = parseInt(simSpeedInput.value);
+        });
+        
+        // Add animation for horizontal flow
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes flowAnimationRight {
+                0% { transform: translateX(0); opacity: 0; }
+                20% { opacity: 1; }
+                80% { opacity: 1; }
+                100% { transform: translateX(100px); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // Initialize the setup
+        window.onload = initSetup;
+    </script>
 </body>
 </html>
