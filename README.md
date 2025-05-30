@@ -6,17 +6,24 @@
 <b> Lab | <b> CHEMICAL ENGINEERING FLUID MECHANICS LAB
 <b> Experiment|     <b> To Study the working principle of a centrifugal pump and determine its efficiency experimentally
 
-<!-- About the Experiment Section -->
-<h3>About the Experiment</h3>
-<p>
-  The purpose of this experiment is to study the working principle of a centrifugal pump and to determine its efficiency experimentally. A centrifugal pump is a mechanical device that moves fluid by converting rotational kinetic energy to hydrodynamic energy of the fluid flow. The rotational energy typically comes from an engine or electric motor.
-</p>
-<p>
-  In this setup, students will operate a centrifugal pump and take measurements of various parameters such as suction head, delivery head, discharge rate, and input power. By calculating the output power using the measured values and comparing it to the input power, the efficiency of the pump can be determined.
-</p>
-<p>
-  This experiment helps students understand the key performance characteristics of centrifugal pumps, including the effects of flow rate and head on efficiency. It also provides hands-on experience in using measuring instruments and interpreting experimental results, which are essential skills in fluid mechanics and pump engineering applications.
-</p>
+<section id="about-experiment" style="margin: 40px 0;">
+  <h2>About the Experiment</h2>
+  <p>
+    This experiment focuses on studying the performance of a Multi-Effect Evaporator (MEE), a key unit operation in chemical and process industries. The MEE system is designed to efficiently utilize steam energy by using the vapor produced from one effect as the heating medium for the next. This reduces overall energy consumption significantly.
+  </p>
+  <p>
+    In this experiment, the primary objectives are:
+  </p>
+  <ul>
+    <li>To understand the working principle of a multi-effect evaporator.</li>
+    <li>To experimentally determine the steam economy of the system.</li>
+    <li>To evaluate the overall heat transfer coefficient for each effect.</li>
+  </ul>
+  <p>
+    By analyzing temperature, pressure, and flow measurements across multiple effects, students can better appreciate the advantages of multiple-effect evaporation over single-effect setups in terms of energy conservation and efficiency.
+  </p>
+</section>
+
 
 
 
