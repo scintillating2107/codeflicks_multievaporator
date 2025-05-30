@@ -2,35 +2,86 @@
   "version": 2.0,
   "questions": [
     {
-      "question": "This is a Sample Question 1?",
+      "question": "What is the main function of an evaporator in a chemical process?",
       "answers": {
-        "a": "answer1",
-        "b": "answer2",
-        "c": "answer3",
-        "d": "answer4"
+        "a": "Mixing different chemicals",
+        "b": "Separating solid impurities from a liquid",
+        "c": "Concentrating a solution by removing solvent as vapor",
+        "d": "Cooling a hot fluid stream"
       },
       "explanations": {
-        "a": "Explanation 1  <a href='www.google.com'>here</a>",
-        "b": "Explanation 2",
-        "c": "Explanation 2",
-        "d": "Explanation 2"
+        "a": "Mixing is not the purpose of an evaporator.",
+        "b": "This is the function of a filter or centrifuge.",
+        "c": "Correct! Evaporators remove solvent (usually water) to concentrate the solution. <a href='https://en.wikipedia.org/wiki/Evaporator'>Learn more</a>",
+        "d": "Cooling is the role of a heat exchanger or cooler."
       },
-      "correctAnswer": "a",
+      "correctAnswer": "c",
       "difficulty": "beginner"
     },
     {
-      "question": "This is a Sample Question 2?",
+      "question": "Which of the following components is typically used to supply heat in an evaporator?",
       "answers": {
-        "a": "answer1",
-        "b": "answer2",
-        "c": "answer3",
-        "d": "answer4"
+        "a": "Cold water",
+        "b": "Saturated steam",
+        "c": "Compressed air",
+        "d": "Refrigerant gas"
       },
       "explanations": {
-        "a": "Explanation 1  <a href='www.google.com'>here</a>",
-        "b": "Explanation 2",
-        "c": "Explanation 2",
-        "d": "Explanation 2"
+        "a": "Cold water cannot supply heat for evaporation.",
+        "b": "Correct! Saturated steam is commonly used as the heating medium. <a href='https://www.sciencedirect.com/topics/engineering/saturated-steam'>Read more</a>",
+        "c": "Compressed air is used in pneumatic systems, not heating.",
+        "d": "Refrigerants are used for cooling, not heating."
+      },
+      "correctAnswer": "b",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "Why is vacuum often applied in evaporators used for heat-sensitive materials?",
+      "answers": {
+        "a": "To increase pressure and speed up boiling",
+        "b": "To raise the temperature of the feed",
+        "c": "To lower the boiling point and avoid thermal degradation",
+        "d": "To condense the vapor more quickly"
+      },
+      "explanations": {
+        "a": "Vacuum decreases pressure, not increases it.",
+        "b": "Vacuum is not used to raise temperature.",
+        "c": "Correct! Lowering boiling point protects heat-sensitive materials. <a href='https://www.labconco.com/article/why-use-vacuum-concentration'>Details here</a>",
+        "d": "Condensation depends more on cooling surfaces."
+      },
+      "correctAnswer": "c",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "In which industry is the use of multi-effect evaporators most common?",
+      "answers": {
+        "a": "Textile industry",
+        "b": "Food and dairy industry",
+        "c": "Construction industry",
+        "d": "Power generation industry"
+      },
+      "explanations": {
+        "a": "Textile uses evaporators, but not multi-effect ones typically.",
+        "b": "Correct! MEE is widely used in milk, juice, and sugar concentration. <a href='https://www.gea.com/en/applications/evaporation/'>More info</a>",
+        "c": "Construction doesn’t use evaporators.",
+        "d": "Power generation uses boilers and turbines, not MEE."
+      },
+      "correctAnswer": "b",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "Which of the following is NOT a benefit of using a multi-effect evaporator?",
+      "answers": {
+        "a": "Reduced steam consumption",
+        "b": "Higher energy efficiency",
+        "c": "Increase in product impurities",
+        "d": "Cost savings on energy usage"
+      },
+      "explanations": {
+        "a": "Steam consumption is indeed reduced.",
+        "b": "Energy efficiency improves with more effects.",
+        "c": "Correct! Proper operation does not increase impurities. <a href='https://www.sciencedirect.com/topics/engineering/multiple-effect-evaporators'>Learn why</a>",
+        "d": "Using less steam results in lower energy costs."
       },
       "correctAnswer": "c",
       "difficulty": "beginner"
