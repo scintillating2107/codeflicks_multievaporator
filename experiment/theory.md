@@ -3,40 +3,11 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Detailed Theory - Multi-Effect Evaporator</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 30px;
-            background-color: #f9f9f9;
-            color: #333;
-        }
-        h1 {
-            color: #004080;
-            margin-bottom: 15px;
-        }
-        p, ul {
-            font-size: 1.1rem;
-            line-height: 1.6;
-            margin-bottom: 15px;
-        }
-        ul {
-            margin-left: 20px;
-        }
-        section {
-            background: white;
-            padding: 25px 30px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-            border-radius: 8px;
-        }
-        strong {
-            color: #00509e;
-        }
-    </style>
+  
 </head>
 <body>
     <section>
-        <h1>Theory (Detailed)</h1>
+        <h1>Theory</h1>
         <p>
             <strong>Evaporation</strong> is a physical process that involves the removal of solvent, usually water, from a solution by heating it to its boiling point. This process concentrates the solution by reducing its volume and increasing the concentration of solutes.
         </p>
