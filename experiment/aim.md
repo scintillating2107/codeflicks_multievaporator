@@ -18,12 +18,7 @@
             <li>Observe and analyze the heat transfer processes involved in each effect of the evaporator.</li>
             <li>Determine the quantity of steam consumed and the amount of solvent evaporated to calculate the steam economy, which measures the efficiency of steam utilization.</li>
             <li>Calculate the overall heat transfer coefficient (U), an important parameter reflecting the thermal performance of the evaporator surfaces under operating conditions.</li>
-            <li>Gain practical insight into the operational challenges and advantages of multi-effect evaporators compared to single-effect evaporators, including energy savings and process optimization.</li>
-            <li>Understand the effect of varying operating parameters such as temperature, pressure, and feed concentration on the efficiency and output of the system.</li>
         </ul>
-        <p>
-            Ultimately, this experiment aims to provide a comprehensive understanding of multi-effect evaporation principles, enabling efficient design, operation, and optimization of evaporators in industries like sugar processing, chemical manufacturing, and pharmaceuticals where large-scale solvent removal is critical.
-        </p>
     </section>
 </body>
 </html>
