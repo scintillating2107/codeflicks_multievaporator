@@ -87,63 +87,60 @@
 
 /////////////// Write the MCQ below in the exactly same described format ///////////////
 
-
-  const myQuestions = [
-    {
-      question: "On increasing the radius of the steel ball to double its value the terminal velocity of the ball become box:",  ///// Write the question inside double quotes
-      answers: {
-        a: " double",                  ///// Write the option 1 inside double quotes
-        b: "four times",                  ///// Write the option 2 inside double quotes
-        c: "eight times",                  ///// Write the option 3 inside double quotes
-        d: "sixteen times"                   ///// Write the option 4 inside double quotes
-      },
-      correctAnswer: "b"                ///// Write the correct option inside double quotes
+const myQuestions = [
+  {
+    question: "What is the primary purpose of using multiple effects in an evaporator system?",
+    answers: {
+      a: "To reduce the boiling point of water",
+      b: "To increase the pressure in each effect",
+      c: "To improve energy efficiency by reusing steam",
+      d: "To increase the feed flow rate"
     },
-
-    {
-      question: " On increasing density of material of the falling ball its terminal velocity:",  ///// Write the question inside double quotes
-      answers: {
-        a: "Increases",                  ///// Write the option 1 inside double quotes
-        b: "decreases",                  ///// Write the option 2 inside double quotes
-        c: "remains constant",                  ///// Write the option 3 inside double quotes
-        d: "NOT"                   ///// Write the option 4 inside double quotes
-      },
-      correctAnswer: "a"                ///// Write the correct option inside double quotes
-    },                                  ///// To add more questions, copy the section below 
-    									                  ///// this line
-
-
-    /* To add more MCQ's, copy the below section, starting from open curly braces ( { )
-        till closing curly braces comma ( }, )
-
-        and paste it below the curly braces comma ( below correct answer }, ) of above 
-        question
-
-    Copy below section
-
-    {
-      question: "This is question n?",
-      answers: {
-        a: "Option 1",
-        b: "Option 2",
-        c: "Option 3",
-        d: "Option 4"
-      },
-      correctAnswer: "c"
+    correctAnswer: "c"
+  },
+  {
+    question: "Steam economy is defined as:",
+    answers: {
+      a: "The amount of steam required per unit of product",
+      b: "The amount of vapor produced per unit of steam consumed",
+      c: "The rate of heat transfer in each effect",
+      d: "The cost savings in a steam plant"
     },
+    correctAnswer: "b"
+  },
+  {
+    question: "In a forward-feed MEE, the feed and steam flow:",
+    answers: {
+      a: "In opposite directions",
+      b: "In the same direction",
+      c: "Are both constant and parallel",
+      d: "Are irrelevant to each other"
+    },
+    correctAnswer: "b"
+  },
+  {
+    question: "What is the effect of increasing the number of effects in a multi-effect evaporator?",
+    answers: {
+      a: "Decreases steam economy",
+      b: "Increases energy consumption",
+      c: "Decreases vapor output",
+      d: "Increases overall energy efficiency"
+    },
+    correctAnswer: "d"
+  },
+  {
+    question: "Which of the following parameters is essential for calculating the overall heat transfer coefficient in MEE?",
+    answers: {
+      a: "Only pressure",
+      b: "Feed viscosity",
+      c: "Temperature difference and heat transfer area",
+      d: "Color of the liquid"
+    },
+    correctAnswer: "c"
+  }
+];
 
-    Copy above section
-
-    */
-
-
-
-
-  ];
-
-
-
-
+  
 /////////////////////////////////////////////////////////////////////////////
 
 /////////////////////// Do not modify the below code ////////////////////////
