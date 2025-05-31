@@ -27,7 +27,7 @@
             <li>Analyze the recorded data to evaluate the efficiency and performance of the multi-effect evaporator.</li>
             <li>After completion, close the steam valve, switch off the power supply, and allow the system to cool down before performing any maintenance.</li>
         </ol>
-        <img src="./images/WhatsApp Image 2025-05-31 at 10.48.08_ef1d24a1.jpg" alt="Flow Chart" width="1000" height="1150">
+        <img src="./images/WhatsApp Image 2025-05-31 at 10.48.08_ef1d24a1.jpg" alt="Flow Chart" width="1000" height="1000">
     </section>
 </body>
 </html>
