@@ -24,19 +24,437 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// Virtual Lab: Multi-Effect Evaporator
-class MultiEffectEvaporatorLab {
+// Voice Assistant for Navigation
+class VoiceAssistant {
     constructor() {
-        this.isRunning = false;
-        this.animationId = null;
         this.speechSynthesis = window.speechSynthesis;
         this.currentSpeech = null;
-        this.voiceEnabled = true;
-        this.speechRate = 0.9;
-        this.speechVolume = 0.8;
-        this.autoShowDialogue = true;
-        this.autoAnnounceChanges = true;
-        this.lastSpokenText = "";
+        this.isEnabled = true;
+        this.speechRate = 0.8;
+        this.speechVolume = 0.9;
+        this.currentStep = 0;
+        
+        this.procedures = {
+            welcome: "Welcome to the Multi-Effect Evaporator Virtual Laboratory. I'm your voice assistant and I'll guide you through the simulation step by step. Click the assistant button to get started or ask for help at any time.",
+            
+            steps: [
+                "Step 1: Let's begin by understanding the equipment setup. You can see three evaporator units connected in series. Each operates at progressively lower temperature and pressure.",
+                
+                "Step 2: Now, let's adjust the operating parameters. Use the steam temperature slider on the right panel. Set it between 140 to 180 degrees Celsius for optimal performance.",
+                
+                "Step 3: Next, set your feed rate using the second slider. This controls how much material flows through the system per hour. Try values between 300 to 700 kilograms per hour.",
+                
+                "Step 4: Configure the feed concentration - this is your starting material concentration. Adjust it according to your raw material, typically between 8 to 15 percent.",
+                
+                "Step 5: Set your target product concentration - this is your desired final result. Values between 40 to 55 percent are typical for most applications.",
+                
+                "Step 6: Adjust the cooling water flow to ensure proper condensation. Maintain adequate flow between 800 to 1500 liters per hour for optimal efficiency.",
+                
+                "Step 7: Now you're ready to start the experiment. Click the 'Start Experiment' button to begin the simulation and observe the real-time animations.",
+                
+                "Step 8: Watch the vapor animations and heating effects as the system operates. Monitor the key performance indicators that update in real-time.",
+                
+                "Step 9: Review the results including steam economy, heat transfer rate, final concentration, and total evaporation. These show your system's performance.",
+                
+                "Step 10: Use the toggle buttons to explore detailed calculations, formulas, and performance analysis for deeper understanding.",
+                
+                "Simulation complete! You can now experiment with different parameters or reset the system to try new configurations. Great job!"
+            ],
+            
+            help: {
+                steamTemp: "Steam temperature controls the driving force for evaporation. Higher temperatures increase efficiency but consume more energy. The optimal range is 140 to 180 degrees Celsius.",
+                
+                feedRate: "Feed rate determines your system throughput. Higher rates increase production but may reduce concentration efficiency. Balance is key for optimal operation.",
+                
+                concentration: "Feed concentration is your starting material's solids content. This affects how much water needs to be removed to reach your target.",
+                
+                targetConc: "Target concentration is your desired final product. Higher targets require more energy and time but yield more concentrated products.",
+                
+                coolingWater: "Cooling water flow affects condensation efficiency. Insufficient flow reduces system performance and vacuum maintenance.",
+                
+                results: "Key performance indicators show your system efficiency. Steam economy above 2.5 indicates good performance. Thermal efficiency above 80 percent is optimal.",
+                
+                experiment: "The experiment runs for 5 seconds to simulate steady-state operation. Watch the animations to see vapor flow and heating effects in real-time."
+            },
+            
+            navigation: {
+                experiment: "You're now in the experiment section where you can interact with the virtual evaporator. Use the control panel to adjust parameters and run simulations.",
+                
+                results: "This is the results section where you can review your experimental outcomes and analyze the performance data from your simulation."
+            }
+        };
+        
+        this.init();
+    }
+    
+    init() {
+        this.createVoiceAssistant();
+        this.loadVoices();
+    }
+    
+    createVoiceAssistant() {
+        // Create floating voice assistant button
+        const assistantButton = document.createElement('div');
+        assistantButton.id = 'voiceAssistant';
+        assistantButton.style.cssText = `
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(44, 62, 80, 0.3);
+            z-index: 1000;
+            transition: all 0.3s ease;
+            border: 3px solid #3498db;
+        `;
+        
+        assistantButton.innerHTML = `
+            <i class="fas fa-user-tie" style="color: #3498db; font-size: 1.6em;"></i>
+        `;
+        
+        // Add hover effects
+        assistantButton.addEventListener('mouseenter', () => {
+            assistantButton.style.transform = 'scale(1.1)';
+            assistantButton.style.boxShadow = '0 15px 40px rgba(52, 152, 219, 0.4)';
+        });
+        
+        assistantButton.addEventListener('mouseleave', () => {
+            assistantButton.style.transform = 'scale(1)';
+            assistantButton.style.boxShadow = '0 10px 30px rgba(44, 62, 80, 0.3)';
+        });
+        
+        assistantButton.addEventListener('click', () => {
+            this.toggleAssistantPanel();
+        });
+        
+        document.body.appendChild(assistantButton);
+        
+        // Create assistant panel
+        this.createAssistantPanel();
+        
+        // Auto-welcome after page load
+        setTimeout(() => {
+            this.speak(this.procedures.welcome);
+        }, 2000);
+    }
+    
+    createAssistantPanel() {
+        const panel = document.createElement('div');
+        panel.id = 'assistantPanel';
+        panel.style.cssText = `
+            position: fixed;
+            bottom: 45px;
+            right: 120px;
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            padding: 12px;
+            border-radius: 10px;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.3);
+            z-index: 999;
+            width: 400px;
+            height: auto;
+            max-height: 120px;
+            transform: translateX(20px) scale(0.95);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 2px solid #3498db;
+            backdrop-filter: blur(10px);
+        `;
+        
+        panel.innerHTML = `
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <i class="fas fa-user-tie" style="color: #3498db; font-size: 1em;"></i>
+                    <h3 style="margin: 0; font-size: 0.8em; font-weight: 600;">Voice Assistant</h3>
+                </div>
+                <div style="display: flex; align-items: center; gap: 4px;">
+                    <i id="assistantStatusIcon" class="fas fa-microphone" style="color: #3498db; font-size: 0.7em;"></i>
+                    <span id="assistantStatusText" style="font-weight: 600; font-size: 0.7em;">Ready</span>
+                    <button id="closeAssistant" style="background: none; border: none; color: white; font-size: 0.9em; cursor: pointer; padding: 2px; border-radius: 3px; transition: background 0.3s; margin-left: 8px;">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <!-- Main Controls -->
+                <div style="display: flex; gap: 6px; flex: 1;">
+                    <button id="startGuide" class="assistant-btn" style="background: #27ae60; flex: 1;">
+                        <i class="fas fa-play"></i> Start
+                    </button>
+                    <button id="nextStep" class="assistant-btn" style="background: #3498db; flex: 1;">
+                        <i class="fas fa-step-forward"></i> Next
+                    </button>
+                    <button id="repeatStep" class="assistant-btn" style="background: #f39c12; flex: 0.8;">
+                        <i class="fas fa-redo"></i>
+                    </button>
+                    <button id="stopSpeech" class="assistant-btn" style="background: #e74c3c; flex: 0.8;">
+                        <i class="fas fa-stop"></i>
+                    </button>
+                </div>
+                
+                <!-- Settings -->
+                <div style="display: flex; align-items: center; gap: 8px; font-size: 0.65em; border-left: 1px solid rgba(255,255,255,0.2); padding-left: 10px;">
+                    <label style="display: flex; align-items: center; gap: 3px;">
+                        <input type="checkbox" id="autoSpeak" checked style="transform: scale(0.7);">
+                        <span style="color: #bdc3c7;">Auto</span>
+                    </label>
+                    <div style="display: flex; align-items: center; gap: 3px;">
+                        <span style="color: #bdc3c7;">Speed:</span>
+                        <input type="range" id="speechSpeed" min="0.5" max="1.5" step="0.1" value="0.8" style="width: 40px;">
+                    </div>
+                </div>
+            </div>
+            
+            <div id="currentMessage" style="font-size: 0.6em; line-height: 1.1; color: #bdc3c7; margin-top: 6px; max-height: 20px; overflow: hidden; text-align: center;">
+                Auto-guidance active • Click Start to begin step-by-step procedure
+            </div>
+        `;
+        
+        document.body.appendChild(panel);
+        
+        // Add styles for buttons
+        const assistantStyles = document.createElement('style');
+        assistantStyles.textContent = `
+            .assistant-btn {
+                color: white;
+                border: none;
+                padding: 5px 6px;
+                border-radius: 4px;
+                font-size: 0.65em;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 3px;
+                font-weight: 600;
+                min-height: 28px;
+            }
+            .assistant-btn:hover {
+                transform: translateY(-1px);
+                filter: brightness(1.1);
+            }
+            #assistantPanel input[type="range"] {
+                -webkit-appearance: none;
+                height: 2px;
+                background: rgba(255,255,255,0.3);
+                border-radius: 1px;
+                outline: none;
+            }
+            #assistantPanel input[type="range"]::-webkit-slider-thumb {
+                -webkit-appearance: none;
+                width: 8px;
+                height: 8px;
+                background: #3498db;
+                border-radius: 50%;
+                cursor: pointer;
+            }
+            #closeAssistant:hover {
+                background: rgba(255,255,255,0.1);
+            }
+        `;
+        document.head.appendChild(assistantStyles);
+        
+        this.setupAssistantListeners();
+    }
+    
+    setupAssistantListeners() {
+        // Close button
+        document.getElementById('closeAssistant').addEventListener('click', () => {
+            this.hideAssistantPanel();
+        });
+        
+        // Main control buttons
+        document.getElementById('startGuide').addEventListener('click', () => {
+            this.currentStep = 0;
+            this.speakStep(1);
+        });
+        
+        document.getElementById('nextStep').addEventListener('click', () => {
+            this.nextStep();
+        });
+        
+        document.getElementById('repeatStep').addEventListener('click', () => {
+            this.speakStep(this.currentStep + 1);
+        });
+        
+        document.getElementById('stopSpeech').addEventListener('click', () => {
+            this.stopSpeech();
+        });
+        
+        // Settings
+        document.getElementById('speechSpeed').addEventListener('input', (e) => {
+            this.speechRate = parseFloat(e.target.value);
+        });
+    }
+    
+    toggleAssistantPanel() {
+        const panel = document.getElementById('assistantPanel');
+        const isVisible = panel.style.visibility === 'visible';
+        
+        if (isVisible) {
+            this.hideAssistantPanel();
+        } else {
+            this.showAssistantPanel();
+        }
+    }
+    
+    showAssistantPanel() {
+        const panel = document.getElementById('assistantPanel');
+        panel.style.visibility = 'visible';
+        panel.style.opacity = '1';
+        panel.style.transform = 'translateX(0) scale(1)';
+    }
+    
+    hideAssistantPanel() {
+        const panel = document.getElementById('assistantPanel');
+        panel.style.opacity = '0';
+        panel.style.transform = 'translateX(20px) scale(0.95)';
+        panel.style.visibility = 'hidden';
+    }
+    
+    loadVoices() {
+        // Wait for voices to load
+        if (this.speechSynthesis.getVoices().length === 0) {
+            this.speechSynthesis.addEventListener('voiceschanged', () => {
+                this.loadVoices();
+            });
+            return;
+        }
+    }
+    
+    getMaleVoice() {
+        const voices = this.speechSynthesis.getVoices();
+        
+        // Look for male voices by name patterns
+        const maleVoice = voices.find(voice => 
+            voice.name.includes('Google UK English Male') ||
+            voice.name.includes('Microsoft David') ||
+            voice.name.includes('Microsoft Mark') ||
+            voice.name.includes('Alex') ||
+            voice.name.includes('Daniel') ||
+            voice.name.includes('Thomas') ||
+            voice.name.includes('Male') ||
+            voice.name.includes('David') ||
+            voice.name.includes('Mark') ||
+            voice.name.toLowerCase().includes('male')
+        );
+        
+        // Fallback to any English voice
+        if (!maleVoice) {
+            return voices.find(voice => voice.lang.includes('en')) || voices[0];
+        }
+        
+        return maleVoice;
+    }
+    
+    speak(text) {
+        if (!this.isEnabled) return;
+        
+        this.stopSpeech();
+        
+        this.updateStatus('Speaking...', text);
+        
+        this.currentSpeech = new SpeechSynthesisUtterance(text);
+        this.currentSpeech.rate = this.speechRate;
+        this.currentSpeech.pitch = 0.9; // Slightly lower pitch for male voice
+        this.currentSpeech.volume = this.speechVolume;
+        
+        const maleVoice = this.getMaleVoice();
+        if (maleVoice) {
+            this.currentSpeech.voice = maleVoice;
+        }
+        
+        this.currentSpeech.onstart = () => {
+            this.updateStatus('Speaking...', text);
+        };
+        
+        this.currentSpeech.onend = () => {
+            this.updateStatus('Ready to help', 'Guidance completed');
+        };
+        
+        this.currentSpeech.onerror = () => {
+            this.updateStatus('Error', 'Speech error occurred');
+        };
+        
+        this.speechSynthesis.speak(this.currentSpeech);
+    }
+    
+    stopSpeech() {
+        if (this.speechSynthesis) {
+            this.speechSynthesis.cancel();
+        }
+        this.updateStatus('Ready to help', 'Speech stopped');
+    }
+    
+    speakStep(stepIndex) {
+        if (stepIndex >= 1 && stepIndex <= this.procedures.steps.length) {
+            this.currentStep = stepIndex - 1; // Convert to 0-indexed
+            this.speak(this.procedures.steps[stepIndex - 1]);
+            
+            // Update assistant panel to show current step
+            this.updateStatus('Speaking...', `Step ${stepIndex} guidance`);
+        }
+    }
+    
+    nextStep() {
+        if (this.currentStep < this.procedures.steps.length - 1) {
+            this.currentStep++;
+            this.speakStep(this.currentStep + 1); // Convert to 1-indexed
+        } else {
+            this.speak("You've completed all the guided steps! Feel free to experiment or ask for specific help.");
+        }
+    }
+    
+    updateStatus(status, message) {
+        const statusText = document.getElementById('assistantStatusText');
+        const statusIcon = document.getElementById('assistantStatusIcon');
+        const messageEl = document.getElementById('currentMessage');
+        
+        if (statusText) statusText.textContent = status;
+        if (messageEl && message) messageEl.textContent = message;
+        
+        if (statusIcon) {
+            if (status === 'Speaking...') {
+                statusIcon.className = 'fas fa-volume-up';
+                statusIcon.style.color = '#27ae60';
+            } else {
+                statusIcon.className = 'fas fa-microphone';
+                statusIcon.style.color = '#3498db';
+            }
+        }
+    }
+    
+    // Method to sync with lab progress
+    syncWithLabProgress(labProgress) {
+        this.currentStep = labProgress.currentStep;
+    }
+}
+
+// Virtual Lab: Multi-Effect Evaporator
+class MultiEffectEvaporatorLab {
+    constructor(voiceAssistant = null) {
+        this.isRunning = false;
+        this.animationId = null;
+        this.voiceAssistant = voiceAssistant;
+        this.userProgress = {
+            hasAdjustedSteam: false,
+            hasAdjustedFeed: false,
+            hasAdjustedConcentration: false,
+            hasAdjustedTarget: false,
+            hasAdjustedCooling: false,
+            hasStartedExperiment: false,
+            hasViewedResults: false,
+            currentStep: 0
+        };
         this.parameters = {
             steamTemp: 150,
             feedRate: 500,
@@ -46,61 +464,6 @@ class MultiEffectEvaporatorLab {
             coolingWaterFlow: 1000
         };
         
-        this.voiceInstructions = {
-            welcome: "Welcome to the Multi-Effect Evaporator Virtual Laboratory. This interactive simulation will help you understand the principles of multi-effect evaporation. You can adjust parameters using the control panel and observe the effects in real-time.",
-            
-            theory: "In the theory section, you will learn about multi-effect evaporation principles. This process uses multiple evaporation stages in series, where each effect operates at progressively lower temperature and pressure to maximize energy efficiency.",
-            
-            experiment: "In the experiment section, you can interact with the virtual evaporator. Use the operating parameters panel on the right to adjust steam temperature, feed rate, and other variables. Click start experiment to begin the simulation and observe the heating effects and vapor flow animations.",
-            
-            procedure: "Follow these experimental steps: First, adjust the steam temperature between 100 and 200 degrees Celsius. Second, set your feed rate between 100 and 1000 kilograms per hour. Third, configure the feed concentration and target product concentration. Finally, click start experiment to run the simulation.",
-            
-            parameters: "The operating parameters control the evaporation process. Steam temperature affects the driving force for heat transfer. Feed rate determines the throughput. Feed concentration is your starting material concentration, and target product concentration is your desired final result.",
-            
-            results: "The results section shows key performance indicators including steam economy, heat transfer rate, final concentration, and total evaporation. Steam economy indicates how efficiently the system uses energy. Values above 2.5 indicate good performance.",
-            
-            formulas: "The formulas section contains the mathematical equations used in calculations. Steam economy is calculated as 2.2 plus temperature effects. Heat transfer rate uses the standard thermal equation. These formulas help you understand the underlying physics.",
-            
-            analysis: "Performance analysis helps you optimize the system. Monitor steam economy for energy efficiency, check if concentrations meet targets, and ensure thermal efficiency exceeds 80 percent for optimal operation.",
-            
-            // Detailed procedural steps
-            procedureSteps: [
-                "Step 1: Adjust the steam temperature. Higher temperatures provide more driving force but consume more energy. The recommended range is 140 to 180 degrees Celsius for optimal performance.",
-                "Step 2: Set the feed rate according to your processing requirements. Higher feed rates increase production but may reduce concentration efficiency. Try values between 300 and 700 kilograms per hour.",
-                "Step 3: Configure the initial feed concentration. This represents your raw material. Typical values range from 8 to 15 percent depending on your application.",
-                "Step 4: Set your target product concentration. This is your desired final concentration. Values between 40 and 55 percent are typical for most applications.",
-                "Step 5: Adjust cooling water flow to ensure adequate condensation. Insufficient cooling water will reduce system efficiency. Recommended range is 800 to 1500 liters per hour.",
-                "Step 6: Click start experiment to begin the simulation. Observe the heating effects, vapor flows, and real-time calculations as the system operates."
-            ],
-            
-            // Parameter-specific guidance
-            steamTempGuidance: "Steam temperature controls the heat input to the first effect. Higher temperatures increase evaporation rate but consume more energy. The current setting affects the temperature cascade across all three effects.",
-            
-            feedRateGuidance: "Feed rate determines the liquid throughput of the system. Higher rates increase production capacity but may reduce the residence time and concentration efficiency.",
-            
-            concentrationGuidance: "Feed concentration is the initial solids content of your material. This value affects the total water that needs to be removed to reach your target concentration.",
-            
-            targetConcGuidance: "Target product concentration is your desired final solids content. Higher targets require more water removal and energy consumption.",
-            
-            coolingWaterGuidance: "Cooling water flow rate affects the condensation efficiency in the final condenser. Adequate flow is essential for proper vapor condensation and vacuum maintenance.",
-            
-            // Experiment status announcements
-            experimentStart: "Experiment started. The system is now heating up. You can observe the heating effects in the evaporator tubes and vapor movement through the connecting lines. Monitor the key performance indicators for real-time results.",
-            
-            experimentRunning: "The experiment is currently running. Steam is flowing through the heating coils, water is evaporating in each effect, and vapor is being condensed. The system is operating at steady state conditions.",
-            
-            experimentComplete: "Experiment completed successfully. The system has reached equilibrium. Review the final results including steam economy, heat transfer rate, and concentration achievement. The performance indicators show the overall system efficiency.",
-            
-            experimentReset: "System has been reset to default parameters. All values have returned to their initial settings. You can now adjust parameters for a new experimental run.",
-            
-            // Result interpretation
-            resultHigh: "Excellent performance achieved. The system is operating efficiently with good steam economy and thermal performance.",
-            
-            resultMedium: "Acceptable performance. The system is working within normal parameters but there may be room for optimization.",
-            
-            resultLow: "Performance below optimal range. Consider adjusting steam temperature or other parameters to improve efficiency."
-        };
-        
         this.init();
     }
 
@@ -108,13 +471,17 @@ class MultiEffectEvaporatorLab {
         this.setupEventListeners();
         this.setupTooltips();
         this.setupToggleFunctions();
-        this.setupVoiceControls();
         this.updateDisplayValues();
         this.calculateResults();
+        
+        // Start initial guidance after a delay
+        setTimeout(() => {
+            this.triggerNextStep();
+        }, 3000);
     }
 
     setupEventListeners() {
-        // Control sliders
+        // Control sliders with voice guidance
         const steamTempSlider = document.getElementById('steamTemp');
         const feedRateSlider = document.getElementById('feedRate');
         const concentrationSlider = document.getElementById('feedConcentration');
@@ -125,79 +492,132 @@ class MultiEffectEvaporatorLab {
             this.parameters.steamTemp = parseInt(e.target.value);
             this.updateDisplayValues();
             this.calculateResults();
-            this.announceParameterChange('steamTemp', e.target.value);
+            
+            if (!this.userProgress.hasAdjustedSteam) {
+                this.userProgress.hasAdjustedSteam = true;
+                this.triggerNextStep();
+            }
         });
 
         feedRateSlider.addEventListener('input', (e) => {
             this.parameters.feedRate = parseInt(e.target.value);
             this.updateDisplayValues();
             this.calculateResults();
-            this.announceParameterChange('feedRate', e.target.value);
+            
+            if (!this.userProgress.hasAdjustedFeed && this.userProgress.hasAdjustedSteam) {
+                this.userProgress.hasAdjustedFeed = true;
+                this.triggerNextStep();
+            }
         });
 
         concentrationSlider.addEventListener('input', (e) => {
             this.parameters.concentration = parseInt(e.target.value);
             this.updateDisplayValues();
             this.calculateResults();
-            this.announceParameterChange('concentration', e.target.value);
+            
+            if (!this.userProgress.hasAdjustedConcentration && this.userProgress.hasAdjustedFeed) {
+                this.userProgress.hasAdjustedConcentration = true;
+                this.triggerNextStep();
+            }
         });
 
         targetProductConcSlider.addEventListener('input', (e) => {
             this.parameters.targetProductConc = parseInt(e.target.value);
             this.updateDisplayValues();
             this.calculateResults();
-            this.announceParameterChange('targetConc', e.target.value);
+            
+            if (!this.userProgress.hasAdjustedTarget && this.userProgress.hasAdjustedConcentration) {
+                this.userProgress.hasAdjustedTarget = true;
+                this.triggerNextStep();
+            }
         });
 
         coolingWaterFlowSlider.addEventListener('input', (e) => {
             this.parameters.coolingWaterFlow = parseInt(e.target.value);
             this.updateDisplayValues();
             this.calculateResults();
-            this.announceParameterChange('coolingWater', e.target.value);
+            
+            if (!this.userProgress.hasAdjustedCooling && this.userProgress.hasAdjustedTarget) {
+                this.userProgress.hasAdjustedCooling = true;
+                this.triggerNextStep();
+            }
         });
 
-        // Control buttons
+        // Control buttons with voice guidance
         document.getElementById('startExperiment').addEventListener('click', () => {
             this.startExperiment();
+            
+            if (!this.userProgress.hasStartedExperiment && this.userProgress.hasAdjustedCooling) {
+                this.userProgress.hasStartedExperiment = true;
+                this.triggerNextStep();
+            }
         });
 
         document.getElementById('resetExperiment').addEventListener('click', () => {
             this.resetExperiment();
+            this.resetProgress();
         });
         
-        // Add voice guidance button to control panel
-        this.addVoiceToControlPanel();
+        // Add navigation listeners for voice guidance
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                const section = link.getAttribute('data-section');
+                if (section === 'results' && !this.userProgress.hasViewedResults && this.userProgress.hasStartedExperiment) {
+                    this.userProgress.hasViewedResults = true;
+                    setTimeout(() => this.triggerNextStep(), 500);
+                }
+            });
+        });
     }
 
-    addVoiceToControlPanel() {
-        const controlPanel = document.querySelector('.control-panel');
-        if (controlPanel) {
-            const panelHeader = controlPanel.querySelector('.panel-header');
-            if (panelHeader) {
-                const voiceBtn = document.createElement('button');
-                voiceBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
-                voiceBtn.title = 'Voice Parameter Guide';
-                voiceBtn.style.cssText = `
-                    background: var(--warning-color);
-                    color: white;
-                    border: none;
-                    padding: 8px 10px;
-                    border-radius: 50%;
-                    margin-left: 10px;
-                    cursor: pointer;
-                    font-size: 0.9em;
-                    transition: all 0.3s ease;
-                `;
-                voiceBtn.addEventListener('click', () => {
-                    this.speakParameterGuidance();
-                });
-                
-                const h3 = panelHeader.querySelector('h3');
-                if (h3) {
-                    h3.appendChild(voiceBtn);
+    triggerNextStep() {
+        if (!this.voiceAssistant) return;
+        
+        const currentStep = this.userProgress.currentStep;
+        
+        // Define step progression based on user actions
+        const stepProgression = [
+            () => !this.userProgress.hasAdjustedSteam, // Step 1: Initial guidance
+            () => this.userProgress.hasAdjustedSteam && !this.userProgress.hasAdjustedFeed, // Step 2: Steam adjusted
+            () => this.userProgress.hasAdjustedFeed && !this.userProgress.hasAdjustedConcentration, // Step 3: Feed adjusted
+            () => this.userProgress.hasAdjustedConcentration && !this.userProgress.hasAdjustedTarget, // Step 4: Concentration adjusted
+            () => this.userProgress.hasAdjustedTarget && !this.userProgress.hasAdjustedCooling, // Step 5: Target adjusted
+            () => this.userProgress.hasAdjustedCooling && !this.userProgress.hasStartedExperiment, // Step 6: Cooling adjusted
+            () => this.userProgress.hasStartedExperiment && !this.userProgress.hasViewedResults, // Step 7: Experiment started
+            () => this.userProgress.hasViewedResults // Step 8: Results viewed
+        ];
+        
+        // Find the current appropriate step
+        for (let i = 0; i < stepProgression.length; i++) {
+            if (stepProgression[i]()) {
+                if (i !== this.userProgress.currentStep) {
+                    this.userProgress.currentStep = i;
+                    this.voiceAssistant.speakStep(i + 1); // Steps are 1-indexed in voice assistant
                 }
+                break;
             }
         }
+    }
+
+    resetProgress() {
+        this.userProgress = {
+            hasAdjustedSteam: false,
+            hasAdjustedFeed: false,
+            hasAdjustedConcentration: false,
+            hasAdjustedTarget: false,
+            hasAdjustedCooling: false,
+            hasStartedExperiment: false,
+            hasViewedResults: false,
+            currentStep: 0
+        };
+        
+        // Restart guidance after reset
+        setTimeout(() => {
+            if (this.voiceAssistant) {
+                this.voiceAssistant.speak("System has been reset. Let's start the procedure again from the beginning.");
+                setTimeout(() => this.triggerNextStep(), 2000);
+            }
+        }, 1000);
     }
 
     setupTooltips() {
@@ -318,7 +738,6 @@ class MultiEffectEvaporatorLab {
                     
                     // Update button text to reflect state
                     const action = isHidden ? 'Hide' : 'Show';
-                    const iconElement = button.querySelector('i');
                     const spanElement = button.querySelector('span');
                     
                     if (spanElement) {
@@ -347,528 +766,6 @@ class MultiEffectEvaporatorLab {
         toggleSection('toggleCalculations', 'calculationsContent', 'Detailed Calculations');
         toggleSection('toggleFormulas', 'formulasContent', 'Formulas & Theory');
         toggleSection('toggleAnalysis', 'analysisContent', 'Performance Analysis');
-    }
-
-    setupVoiceControls() {
-        // Create voice toggle button instead of always-visible dialogue
-        this.createVoiceToggleButton();
-        
-        // Add voice buttons to sections
-        this.addVoiceButtonsToSections();
-    }
-
-    createVoiceToggleButton() {
-        // Create floating voice toggle button
-        const toggleButton = document.createElement('div');
-        toggleButton.id = 'voiceToggleButton';
-        toggleButton.style.cssText = `
-            position: fixed;
-            bottom: 30px;
-            left: 30px;
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(135deg, var(--secondary-color), #2980b9);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            box-shadow: var(--shadow-heavy);
-            z-index: 1000;
-            transition: all 0.3s ease;
-            border: 3px solid white;
-        `;
-        
-        toggleButton.innerHTML = `
-            <i class="fas fa-volume-up" style="color: white; font-size: 1.4em;"></i>
-        `;
-        
-        // Add hover effect
-        toggleButton.addEventListener('mouseenter', () => {
-            toggleButton.style.transform = 'scale(1.1)';
-            toggleButton.style.boxShadow = '0 8px 25px rgba(52, 152, 219, 0.4)';
-        });
-        
-        toggleButton.addEventListener('mouseleave', () => {
-            toggleButton.style.transform = 'scale(1)';
-            toggleButton.style.boxShadow = 'var(--shadow-heavy)';
-        });
-        
-        // Toggle voice guide on click
-        toggleButton.addEventListener('click', () => {
-            this.toggleVoiceGuide();
-        });
-        
-        document.body.appendChild(toggleButton);
-        
-        // Create the voice guide panel (hidden by default)
-        this.createVoiceGuidePanel();
-    }
-
-    createVoiceGuidePanel() {
-        const voicePanel = document.createElement('div');
-        voicePanel.id = 'voiceGuidePanel';
-        voicePanel.style.cssText = `
-            position: fixed;
-            bottom: 110px;
-            left: 30px;
-            background: linear-gradient(135deg, #2c3e50, #34495e);
-            color: white;
-            padding: 10px;
-            border-radius: 10px;
-            box-shadow: var(--shadow-heavy);
-            z-index: 999;
-            width: 260px;
-            transform: translateY(20px) scale(0.95);
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            border: 2px solid var(--secondary-color);
-            backdrop-filter: blur(10px);
-        `;
-        
-        voicePanel.innerHTML = `
-            <!-- Header -->
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
-                <div style="display: flex; align-items: center; gap: 6px;">
-                    <i class="fas fa-volume-up" style="color: var(--secondary-color); font-size: 1em;"></i>
-                    <h3 style="margin: 0; font-size: 0.85em; font-weight: 600;">Voice Guide</h3>
-                </div>
-                <button id="closeVoicePanel" style="background: none; border: none; color: white; font-size: 0.9em; cursor: pointer; padding: 2px; border-radius: 3px; transition: background 0.3s;">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            
-            <!-- Status Display -->
-            <div id="voiceStatusDisplay" style="background: rgba(255,255,255,0.1); padding: 6px 8px; border-radius: 5px; margin-bottom: 8px;">
-                <div style="display: flex; align-items: center; gap: 4px;">
-                    <i id="voiceStatusIcon" class="fas fa-volume-up" style="color: var(--secondary-color); font-size: 0.8em;"></i>
-                    <span id="voiceStatusText" style="font-weight: 600; font-size: 0.7em;">Ready</span>
-                </div>
-                <div id="currentVoiceMessage" style="font-size: 0.65em; line-height: 1.2; color: #ecf0f1; margin-top: 3px; max-height: 24px; overflow: hidden;">
-                    Click voice button for guidance
-                </div>
-            </div>
-            
-            <!-- Quick Actions & Settings Combined -->
-            <div>
-                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
-                    <span style="font-size: 0.7em; color: #bdc3c7;">Actions:</span>
-                    <button id="toggleVoiceSettings" style="background: none; border: none; color: #bdc3c7; cursor: pointer; font-size: 0.8em; padding: 2px;">
-                        <i class="fas fa-cog"></i>
-                    </button>
-                </div>
-                
-                <!-- Quick Actions Row -->
-                <div style="display: flex; gap: 4px; margin-bottom: 6px;">
-                    <button id="voiceWelcomeBtn" class="voice-action-btn">
-                        <i class="fas fa-home"></i>
-                    </button>
-                    <button id="voiceCurrentBtn" class="voice-action-btn">
-                        <i class="fas fa-info"></i>
-                    </button>
-                    <button id="voiceParametersBtn" class="voice-action-btn">
-                        <i class="fas fa-sliders-h"></i>
-                    </button>
-                    <button id="voiceStopBtn" class="voice-action-btn stop-btn">
-                        <i class="fas fa-stop"></i>
-                    </button>
-                </div>
-                
-                <!-- Compact Settings -->
-                <div id="voiceSettingsContent" style="display: none; background: rgba(255,255,255,0.05); padding: 6px; border-radius: 4px;">
-                    <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 4px;">
-                        <span style="font-size: 0.65em; color: #bdc3c7; min-width: 35px;">Speed:</span>
-                        <input type="range" id="voiceSpeechRate" min="0.5" max="2" step="0.1" value="0.9" style="flex: 1;">
-                    </div>
-                    <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 4px;">
-                        <span style="font-size: 0.65em; color: #bdc3c7; min-width: 35px;">Volume:</span>
-                        <input type="range" id="voiceSpeechVolume" min="0" max="1" step="0.1" value="0.8" style="flex: 1;">
-                    </div>
-                    <label style="display: flex; align-items: center; gap: 4px; font-size: 0.65em; color: #bdc3c7;">
-                        <input type="checkbox" id="voiceAutoAnnounce" checked style="transform: scale(0.8);">
-                        Auto-announce
-                    </label>
-                </div>
-            </div>
-        `;
-        
-        document.body.appendChild(voicePanel);
-        
-        // Add voice panel styles
-        const voicePanelStyles = document.createElement('style');
-        voicePanelStyles.textContent = `
-            .voice-action-btn {
-                background: rgba(52, 152, 219, 0.8);
-                color: white;
-                border: none;
-                padding: 6px;
-                border-radius: 4px;
-                font-size: 0.75em;
-                cursor: pointer;
-                transition: all 0.3s ease;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                flex: 1;
-                min-width: 0;
-            }
-            .voice-action-btn:hover {
-                background: var(--secondary-color);
-                transform: translateY(-1px);
-            }
-            .voice-action-btn.stop-btn {
-                background: var(--accent-color);
-            }
-            .voice-action-btn.stop-btn:hover {
-                background: #c0392b;
-            }
-            
-            #voiceGuidePanel input[type="range"] {
-                -webkit-appearance: none;
-                appearance: none;
-                height: 2px;
-                background: rgba(255,255,255,0.3);
-                border-radius: 1px;
-                outline: none;
-            }
-            
-            #voiceGuidePanel input[type="range"]::-webkit-slider-thumb {
-                -webkit-appearance: none;
-                appearance: none;
-                width: 10px;
-                height: 10px;
-                background: var(--secondary-color);
-                border-radius: 50%;
-                cursor: pointer;
-            }
-            
-            #closeVoicePanel:hover {
-                background: rgba(255,255,255,0.1);
-            }
-        `;
-        document.head.appendChild(voicePanelStyles);
-        
-        // Setup event listeners for the voice panel
-        this.setupVoicePanelListeners();
-    }
-
-    setupVoicePanelListeners() {
-        // Close button
-        document.getElementById('closeVoicePanel').addEventListener('click', () => {
-            this.hideVoiceGuide();
-        });
-        
-        // Quick action buttons
-        document.getElementById('voiceWelcomeBtn').addEventListener('click', () => {
-            this.speak(this.voiceInstructions.welcome);
-        });
-        
-        document.getElementById('voiceCurrentBtn').addEventListener('click', () => {
-            this.speakCurrentSection();
-        });
-        
-        document.getElementById('voiceParametersBtn').addEventListener('click', () => {
-            this.speak(this.voiceInstructions.parameters);
-        });
-        
-        document.getElementById('voiceStopBtn').addEventListener('click', () => {
-            this.stopSpeech();
-        });
-        
-        // Settings toggle
-        document.getElementById('toggleVoiceSettings').addEventListener('click', () => {
-            const settingsContent = document.getElementById('voiceSettingsContent');
-            const isVisible = settingsContent.style.display !== 'none';
-            settingsContent.style.display = isVisible ? 'none' : 'block';
-        });
-        
-        // Settings controls
-        document.getElementById('voiceSpeechRate').addEventListener('input', (e) => {
-            this.speechRate = parseFloat(e.target.value);
-        });
-        
-        document.getElementById('voiceSpeechVolume').addEventListener('input', (e) => {
-            this.speechVolume = parseFloat(e.target.value);
-        });
-        
-        document.getElementById('voiceAutoAnnounce').addEventListener('change', (e) => {
-            this.autoAnnounceChanges = e.target.checked;
-        });
-    }
-
-    toggleVoiceGuide() {
-        const panel = document.getElementById('voiceGuidePanel');
-        const button = document.getElementById('voiceToggleButton');
-        const isVisible = panel.style.visibility === 'visible';
-        
-        if (isVisible) {
-            this.hideVoiceGuide();
-        } else {
-            this.showVoiceGuide();
-        }
-    }
-
-    showVoiceGuide() {
-        const panel = document.getElementById('voiceGuidePanel');
-        const button = document.getElementById('voiceToggleButton');
-        
-        panel.style.visibility = 'visible';
-        panel.style.opacity = '1';
-        panel.style.transform = 'translateY(0) scale(1)';
-        
-        // Update button appearance
-        button.style.background = 'linear-gradient(135deg, var(--success-color), #27ae60)';
-        button.querySelector('i').className = 'fas fa-volume-down';
-        
-        // Update message if there's current speech
-        this.updateVoiceStatus();
-    }
-
-    hideVoiceGuide() {
-        const panel = document.getElementById('voiceGuidePanel');
-        const button = document.getElementById('voiceToggleButton');
-        
-        panel.style.opacity = '0';
-        panel.style.transform = 'translateY(20px) scale(0.95)';
-        panel.style.visibility = 'hidden';
-        
-        // Reset button appearance
-        button.style.background = 'linear-gradient(135deg, var(--secondary-color), #2980b9)';
-        button.querySelector('i').className = 'fas fa-volume-up';
-    }
-
-    updateVoiceStatus(status = 'Ready', message = null) {
-        const statusText = document.getElementById('voiceStatusText');
-        const statusIcon = document.getElementById('voiceStatusIcon');
-        const messageElement = document.getElementById('currentVoiceMessage');
-        
-        if (statusText) statusText.textContent = status;
-        if (messageElement && message) messageElement.textContent = message;
-        
-        // Update icon based on status
-        if (statusIcon) {
-            switch(status) {
-                case 'Speaking...':
-                    statusIcon.className = 'fas fa-volume-up';
-                    statusIcon.style.color = 'var(--success-color)';
-                    break;
-                case 'Error':
-                    statusIcon.className = 'fas fa-exclamation-triangle';
-                    statusIcon.style.color = 'var(--accent-color)';
-                    break;
-                default:
-                    statusIcon.className = 'fas fa-volume-up';
-                    statusIcon.style.color = 'var(--secondary-color)';
-            }
-        }
-    }
-
-    addVoiceButtonsToSections() {
-        // Add voice buttons to section headers
-        const sections = [
-            { id: 'theory', instruction: 'theory' },
-            { id: 'experiment', instruction: 'experiment' },
-            { id: 'results', instruction: 'results' }
-        ];
-        
-        sections.forEach(section => {
-            const sectionElement = document.getElementById(section.id);
-            if (sectionElement) {
-                const header = sectionElement.querySelector('.section-header h2');
-                if (header) {
-                    const voiceBtn = document.createElement('button');
-                    voiceBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
-                    voiceBtn.className = 'voice-section-btn';
-                    voiceBtn.style.cssText = `
-                        background: var(--info-color);
-                        color: white;
-                        border: none;
-                        padding: 8px 10px;
-                        border-radius: 50%;
-                        margin-left: 15px;
-                        cursor: pointer;
-                        font-size: 0.9em;
-                        transition: all 0.3s ease;
-                    `;
-                    voiceBtn.addEventListener('click', () => {
-                        this.speak(this.voiceInstructions[section.instruction]);
-                    });
-                    header.appendChild(voiceBtn);
-                }
-            }
-        });
-        
-        // Add voice buttons to toggle sections
-        const toggleButtons = [
-            { id: 'toggleGuide', instruction: 'procedure' },
-            { id: 'toggleFormulas', instruction: 'formulas' },
-            { id: 'toggleAnalysis', instruction: 'analysis' }
-        ];
-        
-        toggleButtons.forEach(btn => {
-            const buttonElement = document.getElementById(btn.id);
-            if (buttonElement) {
-                const voiceBtn = document.createElement('button');
-                voiceBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
-                voiceBtn.className = 'voice-toggle-btn';
-                voiceBtn.style.cssText = `
-                    background: var(--warning-color);
-                    color: white;
-                    border: none;
-                    padding: 6px 8px;
-                    border-radius: 4px;
-                    margin-left: 10px;
-                    cursor: pointer;
-                    font-size: 0.8em;
-                    transition: all 0.3s ease;
-                `;
-                voiceBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    this.speak(this.voiceInstructions[btn.instruction]);
-                });
-                buttonElement.parentNode.appendChild(voiceBtn);
-            }
-        });
-    }
-
-    speak(text) {
-        if (!this.voiceEnabled || !this.speechSynthesis) return;
-        
-        // Stop any current speech
-        this.stopSpeech();
-        
-        // Update voice guide if it's visible
-        this.updateVoiceStatus('Speaking...', text);
-        
-        // Create new speech
-        this.currentSpeech = new SpeechSynthesisUtterance(text);
-        this.currentSpeech.rate = this.speechRate || 0.9;
-        this.currentSpeech.pitch = 1;
-        this.currentSpeech.volume = this.speechVolume || 0.8;
-        
-        // Try to use a female voice
-        const voices = this.speechSynthesis.getVoices();
-        
-        // First priority: Look for specific female voice names
-        let preferredVoice = voices.find(voice => 
-            voice.name.includes('Samantha') ||
-            voice.name.includes('Victoria') ||
-            voice.name.includes('Karen') ||
-            voice.name.includes('Susan') ||
-            voice.name.includes('Google UK English Female') ||
-            voice.name.includes('Microsoft Zira') ||
-            voice.name.includes('Microsoft Hazel') ||
-            voice.name.includes('Fiona') ||
-            voice.name.includes('Female') ||
-            voice.name.includes('Woman')
-        );
-        
-        // Second priority: Look for voices that typically indicate female voices
-        if (!preferredVoice) {
-            preferredVoice = voices.find(voice => 
-                (voice.lang.includes('en') && 
-                (voice.name.toLowerCase().includes('female') ||
-                 voice.name.toLowerCase().includes('woman') ||
-                 voice.name.toLowerCase().includes('zira') ||
-                 voice.name.toLowerCase().includes('hazel') ||
-                 voice.name.toLowerCase().includes('eva') ||
-                 voice.name.toLowerCase().includes('samantha')))
-            );
-        }
-        
-        // Third priority: Any English voice (may be male or female)
-        if (!preferredVoice) {
-            preferredVoice = voices.find(voice => 
-                voice.lang.includes('en') || 
-                voice.name.includes('Google')
-            );
-        }
-        
-        if (preferredVoice) {
-            this.currentSpeech.voice = preferredVoice;
-        }
-        
-        // Visual feedback
-        this.showSpeechIndicator(true);
-        
-        this.currentSpeech.onstart = () => {
-            this.updateVoiceStatus('Speaking...', text);
-        };
-        
-        this.currentSpeech.onend = () => {
-            this.showSpeechIndicator(false);
-            this.updateVoiceStatus('Ready', 'Voice guidance completed.');
-            this.currentSpeech = null;
-        };
-        
-        this.currentSpeech.onerror = () => {
-            this.showSpeechIndicator(false);
-            this.updateVoiceStatus('Error', 'Speech synthesis error occurred.');
-            this.currentSpeech = null;
-        };
-        
-        this.speechSynthesis.speak(this.currentSpeech);
-        this.lastSpokenText = text;
-    }
-
-    stopSpeech() {
-        if (this.speechSynthesis) {
-            this.speechSynthesis.cancel();
-        }
-        if (this.currentSpeech) {
-            this.currentSpeech = null;
-        }
-        this.showSpeechIndicator(false);
-        this.updateVoiceStatus('Ready', 'Voice guidance stopped.');
-    }
-
-    showSpeechIndicator(speaking) {
-        const indicator = document.getElementById('speechIndicator') || this.createSpeechIndicator();
-        if (speaking) {
-            indicator.style.display = 'flex';
-            indicator.innerHTML = `
-                <i class="fas fa-volume-up" style="color: var(--success-color); animation: pulse 1s infinite;"></i>
-                <span style="margin-left: 8px; color: var(--success-color); font-weight: 600;">Speaking...</span>
-            `;
-        } else {
-            indicator.style.display = 'none';
-        }
-    }
-
-    createSpeechIndicator() {
-        const indicator = document.createElement('div');
-        indicator.id = 'speechIndicator';
-        indicator.style.cssText = `
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: rgba(39, 174, 96, 0.1);
-            border: 2px solid var(--success-color);
-            border-radius: 25px;
-            padding: 10px 20px;
-            display: none;
-            align-items: center;
-            z-index: 1001;
-            backdrop-filter: blur(10px);
-            font-size: 0.9em;
-        `;
-        document.body.appendChild(indicator);
-        return indicator;
-    }
-
-    speakCurrentSection() {
-        const activeSection = document.querySelector('.content-section.active');
-        if (activeSection) {
-            const sectionId = activeSection.id;
-            if (this.voiceInstructions[sectionId]) {
-                this.speak(this.voiceInstructions[sectionId]);
-            }
-        }
-    }
-
-    speakParameterGuidance() {
-        this.speak(this.voiceInstructions.parameters);
     }
 
     updateDisplayValues() {
@@ -1027,11 +924,6 @@ class MultiEffectEvaporatorLab {
         const diagram = document.querySelector('.evaporator-setup');
         diagram.classList.add('running');
 
-        // Voice announcement for experiment start
-        if (this.voiceEnabled) {
-            this.speak(this.voiceInstructions.experimentStart);
-        }
-
         // Start vapor animation
         this.animateVapors();
         // Start water heating effect
@@ -1051,13 +943,6 @@ class MultiEffectEvaporatorLab {
         
         // Show start notification
         this.showNotification('Experiment started! Monitoring system performance...', 'info');
-
-        // Announce experiment status after 3 seconds
-        setTimeout(() => {
-            if (this.isRunning && this.voiceEnabled) {
-                this.speak(this.voiceInstructions.experimentRunning);
-            }
-        }, 3000);
     }
 
     animateVapors() {
@@ -1237,18 +1122,15 @@ class MultiEffectEvaporatorLab {
         // Recalculate final results
         this.calculateResults();
 
-        // Voice announcement for experiment completion
-        if (this.voiceEnabled) {
-            this.speak(this.voiceInstructions.experimentComplete);
-            
-            // Announce performance results
-            setTimeout(() => {
-                this.announcePerformanceResults();
-            }, 3000);
-        }
-
         // Show completion message
         this.showNotification('Experiment completed successfully! Results are now stable.', 'success');
+        
+        // Trigger voice guidance for experiment completion
+        if (this.voiceAssistant && this.userProgress.hasStartedExperiment) {
+            setTimeout(() => {
+                this.voiceAssistant.speak("Excellent! The experiment has completed successfully. You can now review the results including steam economy, heat transfer rate, and final concentration. Navigate to the Results section to see detailed analysis.");
+            }, 2000);
+        }
     }
 
     resetExperiment() {
@@ -1300,11 +1182,6 @@ class MultiEffectEvaporatorLab {
         this.updateDisplayValues();
         this.calculateResults();
 
-        // Voice announcement for reset
-        if (this.voiceEnabled) {
-            this.speak(this.voiceInstructions.experimentReset);
-        }
-
         this.showNotification('System reset to default parameters', 'info');
     }
 
@@ -1348,78 +1225,17 @@ class MultiEffectEvaporatorLab {
             }, 400);
         }, 4000);
     }
-
-    announceParameterChange(parameter, value) {
-        if (!this.voiceEnabled || !this.autoAnnounceChanges) return;
-        
-        // Debounce parameter announcements to avoid too many voice messages
-        clearTimeout(this.parameterTimeout);
-        this.parameterTimeout = setTimeout(() => {
-            let announcement = "";
-            switch(parameter) {
-                case 'steamTemp':
-                    announcement = `Steam temperature set to ${value} degrees Celsius. ${this.voiceInstructions.steamTempGuidance}`;
-                    break;
-                case 'feedRate':
-                    announcement = `Feed rate set to ${value} kilograms per hour. ${this.voiceInstructions.feedRateGuidance}`;
-                    break;
-                case 'concentration':
-                    announcement = `Feed concentration set to ${value} percent. ${this.voiceInstructions.concentrationGuidance}`;
-                    break;
-                case 'targetConc':
-                    announcement = `Target product concentration set to ${value} percent. ${this.voiceInstructions.targetConcGuidance}`;
-                    break;
-                case 'coolingWater':
-                    announcement = `Cooling water flow set to ${value} liters per hour. ${this.voiceInstructions.coolingWaterGuidance}`;
-                    break;
-            }
-            if (announcement) {
-                this.speak(announcement);
-            }
-        }, 1000); // 1 second delay to avoid rapid announcements
-    }
-
-    speakProcedureStep(stepNumber) {
-        if (stepNumber >= 1 && stepNumber <= this.voiceInstructions.procedureSteps.length) {
-            this.speak(this.voiceInstructions.procedureSteps[stepNumber - 1]);
-        }
-    }
-
-    announcePerformanceResults() {
-        const steamEconomy = parseFloat(document.getElementById('steamEconomy').textContent);
-        const thermalEfficiency = parseInt(document.getElementById('thermalEfficiency').textContent);
-        
-        let performanceMessage = "";
-        
-        if (steamEconomy >= 3.0 && thermalEfficiency >= 85) {
-            performanceMessage = this.voiceInstructions.resultHigh;
-        } else if (steamEconomy >= 2.5 && thermalEfficiency >= 75) {
-            performanceMessage = this.voiceInstructions.resultMedium;
-        } else {
-            performanceMessage = this.voiceInstructions.resultLow;
-        }
-        
-        const detailedResults = `The steam economy achieved is ${steamEconomy} kilograms per kilogram, and thermal efficiency is ${thermalEfficiency} percent. ${performanceMessage}`;
-        
-        this.speak(detailedResults);
-    }
 }
 
 // Initialize the virtual lab when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    const lab = new MultiEffectEvaporatorLab();
+    const voiceAssistant = new VoiceAssistant();
+    const lab = new MultiEffectEvaporatorLab(voiceAssistant);
     
-    // Add welcome message with voice guidance
+    // Add welcome message
     setTimeout(() => {
-        lab.showNotification('Welcome to the Multi-Effect Evaporator Virtual Lab! 🎧 Click the voice button (bottom-left) to access audio guidance and controls.', 'info');
+        lab.showNotification('Welcome to the Multi-Effect Evaporator Virtual Lab! The voice assistant will guide you through each step automatically.', 'info');
     }, 1000);
-    
-    // Auto-play welcome voice guidance after a short delay
-    setTimeout(() => {
-        if (lab.voiceEnabled) {
-            lab.speak(lab.voiceInstructions.welcome);
-        }
-    }, 2000);
 });
 
 // Add keyboard shortcuts
