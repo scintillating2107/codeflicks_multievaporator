@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Multi-Effect Evaporator Virtual Lab |Chemical Engineering fluid mechanics</title>
-    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
@@ -17,7 +17,6 @@
                 <span class="brand-text">Virtual Chemical Lab</span>
             </div>
             <div class="nav-links">
-                <a href="#theory" class="nav-link" data-section="theory"><i class="fas fa-book"></i> Theory</a>
                 <a href="#experiment" class="nav-link active" data-section="experiment"><i class="fas fa-microscope"></i> Experiment</a>
                 <a href="#results" class="nav-link" data-section="results"><i class="fas fa-chart-line"></i> Results</a>
             </div>
@@ -37,42 +36,6 @@
                 <p class="subtitle">Interactive simulation for studying multi-effect evaporation processes</p>
             </div>
         </header>
-
-        <!-- Theory Section -->
-        <section id="theory" class="content-section">
-            <div class="section-header">
-                <h2><i class="fas fa-book"></i>Theory</h2>
-            </div>
-            <div class="theory-content">
-                <div class="theory-main">
-                    <h3>Multi-Effect Evaporation Process</h3>
-                    <p>Multi-effect evaporation is a thermal separation process where multiple evaporation stages (effects) are arranged in series. Each effect operates at progressively lower temperature and pressure, maximizing energy efficiency by reusing vapor from the previous effect as heating medium for the next.</p>
-                    
-                    <h4>Key Principles:</h4>
-                    <ul class="principle-list">
-                        <li><strong>Energy Reuse:</strong> Vapor from each effect serves as heating medium for the next effect</li>
-                        <li><strong>Pressure Cascade:</strong> Each successive effect operates at lower pressure and temperature</li>
-                        <li><strong>Steam Economy:</strong> Ratio of water evaporated to steam consumed (kg/kg)</li>
-                        <li><strong>Heat Transfer:</strong> Driven by temperature differences between effects</li>
-                    </ul>
-                </div>
-                <div class="theory-sidebar">
-                    <div class="info-box">
-                        <h4><i class="fas fa-lightbulb"></i> Did You Know?</h4>
-                        <p>Multi-effect evaporators can achieve steam economies of 3-4 kg/kg compared to 0.8-1.0 kg/kg for single-effect systems!</p>
-                    </div>
-                    <div class="info-box">
-                        <h4><i class="fas fa-industry"></i> Applications</h4>
-                        <ul>
-                            <li>Seawater desalination</li>
-                            <li>Sugar processing</li>
-                            <li>Pharmaceutical concentration</li>
-                            <li>Chemical industry</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </section>
 
         <!-- Experiment Section -->
         <section id="experiment" class="content-section active">
@@ -682,47 +645,6 @@
                             </div>
                         </div>
                     </div>
-
-                    <!-- Summary Findings -->
-                    <div style="background: linear-gradient(135deg, #e3f2fd, #f3e5f5); padding: 20px; border-radius: 10px; border: 1px solid #e1bee7;">
-                        <h4 style="color: var(--primary-color); margin-bottom: 15px; font-size: 1.1em;">
-                            <i class="fas fa-lightbulb"></i> Summary Findings
-                        </h4>
-                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px;">
-                            <div style="background: white; padding: 12px; border-radius: 6px; border-left: 3px solid var(--info-color);">
-                                <h5 style="color: var(--info-color); margin-bottom: 8px; font-size: 0.95em;">
-                                    <i class="fas fa-check-circle"></i> System Performance
-                                </h5>
-                                <p style="font-size: 0.85em; margin: 0; color: var(--text-secondary);">
-                                    The multi-effect evaporator achieved excellent steam economy of <span id="performanceSteamEconomy" style="font-weight: 600;">2.85 kg/kg</span>, demonstrating efficient energy utilization across all three effects.
-                                </p>
-                            </div>
-                            <div style="background: white; padding: 12px; border-radius: 6px; border-left: 3px solid var(--warning-color);">
-                                <h5 style="color: var(--warning-color); margin-bottom: 8px; font-size: 0.95em;">
-                                    <i class="fas fa-flask"></i> Concentration Achievement
-                                </h5>
-                                <p style="font-size: 0.85em; margin: 0; color: var(--text-secondary);">
-                                    Successfully concentrated the feed from <span id="concentrationFrom" style="font-weight: 600;">10%</span> to <span id="concentrationTo" style="font-weight: 600;">45%</span>, meeting the target product specification.
-                                </p>
-                            </div>
-                            <div style="background: white; padding: 12px; border-radius: 6px; border-left: 3px solid var(--success-color);">
-                                <h5 style="color: var(--success-color); margin-bottom: 8px; font-size: 0.95em;">
-                                    <i class="fas fa-leaf"></i> Energy Efficiency
-                                </h5>
-                                <p style="font-size: 0.85em; margin: 0; color: var(--text-secondary);">
-                                    Thermal efficiency of <span id="efficiencyValue" style="font-weight: 600;">82%</span> indicates optimal heat recovery and minimal energy waste in the multi-effect configuration.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div style="margin-top: 20px; padding: 15px; background: #fff3e0; border-radius: 8px; border-left: 4px solid var(--warning-color);">
-                        <p style="margin: 0; font-size: 0.9em; color: var(--text-secondary);">
-                            <i class="fas fa-info-circle" style="color: var(--warning-color); margin-right: 8px;"></i>
-                            <strong>Note:</strong> For detailed analysis including calculations, formulas, and performance optimization recommendations, 
-                            use the toggle buttons in the <strong>Virtual Simulation</strong> section above.
-                        </p>
-                    </div>
                 </div>
             </div>
         </section>
@@ -734,23 +656,6 @@
                     <h4>Virtual Chemical Lab</h4>
                     <p>Interactive simulations for chemical engineering education</p>
                 </div>
-                <div class="footer-section">
-                    <h4>Quick Links</h4>
-                    <ul>
-                        <li><a href="#theory">Theory</a></li>
-                        <li><a href="#experiment">Experiment</a></li>
-                        <li><a href="#results">Results</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4>Resources</h4>
-                    <ul>
-                        <li><a href="#">Download Report</a></li>
-                        <li><a href="#">Save Session</a></li>
-                        <li><a href="#">Share Results</a></li>
-                        <li><a href="#">Help & Support</a></li>
-                    </ul>
-                </div>
             </div>
             <div class="footer-bottom">
                 <p>&copy; 2024 Virtual Chemical Lab. All rights reserved. | Designed for educational purposes</p>
@@ -758,6 +663,6 @@
         </footer>
     </div>
 
-    <script src="js/main.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
