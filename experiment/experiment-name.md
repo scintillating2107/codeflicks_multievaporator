@@ -3,7 +3,7 @@
 <head>
 </head>
 <body>
-  <p>To study the performance of multi-effect evaporator.</p>
+  <p>To Study The Performance of Multi-Effect Evaporator</p>
 </body>
 </html>
 
