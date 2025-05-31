@@ -1,4 +1,3 @@
-//Your JavaScript goes in here
 // Navigation functionality
 document.addEventListener('DOMContentLoaded', function() {
     // Handle navigation link clicks
