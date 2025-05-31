@@ -87,6 +87,58 @@
 
 /////////////// Write the MCQ below in the exactly same described format ///////////////
 
+const myQuestions = [
+  {
+    question: "What is the main function of an evaporator in a chemical process?",
+    answers: {
+      a: "Mixing different chemicals",
+      b: "Separating solid impurities from a liquid",
+      c: "Concentrating a solution by removing solvent as vapor",
+      d: "Cooling a hot fluid stream"
+    },
+    correctAnswer: "c"
+  },
+  {
+    question: "Which of the following components is typically used to supply heat in an evaporator?",
+    answers: {
+      a: "Cold water",
+      b: "Saturated steam",
+      c: "Compressed air",
+      d: "Refrigerant gas"
+    },
+    correctAnswer: "b"
+  },
+  {
+    question: "Why is vacuum often applied in evaporators used for heat-sensitive materials?",
+    answers: {
+      a: "To increase pressure and speed up boiling",
+      b: "To raise the temperature of the feed",
+      c: "To lower the boiling point and avoid thermal degradation",
+      d: "To condense the vapor more quickly"
+    },
+    correctAnswer: "c"
+  },
+  {
+    question: "In which industry is the use of multi-effect evaporators most common?",
+    answers: {
+      a: "Textile industry",
+      b: "Food and dairy industry",
+      c: "Construction industry",
+      d: "Power generation industry"
+    },
+    correctAnswer: "b"
+  },
+  {
+    question: "Which of the following is NOT a benefit of using a multi-effect evaporator?",
+    answers: {
+      a: "Reduced steam consumption",
+      b: "Higher energy efficiency",
+      c: "Increase in product impurities",
+      d: "Cost savings on energy usage"
+    },
+    correctAnswer: "c"
+  }
+];
 
   
 /////////////////////////////////////////////////////////////////////////////
