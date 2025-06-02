@@ -3,8 +3,8 @@
 
 <b>Discipline | <b>Chemical Engineering
 :--|:--|
-<b> Lab | <b> CHEMICAL ENGINEERING FLUID MECHANICS LAB
-<b> Experiment|     <b> To Study the working principle of a centrifugal pump and determine its efficiency experimentally
+<b> Lab | <b> HEAT TRANSFER OPERATIONS LAB
+<b> Experiment|     <b> To study the performance of multi-effect evaporator.
 
 <section id="about-experiment" style="margin: 40px 0;">
   <h2>About the Experiment</h2>
