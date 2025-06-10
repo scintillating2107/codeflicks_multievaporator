@@ -7,7 +7,6 @@
 </head>
 <body>
     <section>
-        <h1>Theory</h1>
         <p>
             <strong>Evaporation</strong> is a physical process that involves the removal of solvent, usually water, from a solution by heating it to its boiling point. This process concentrates the solution by reducing its volume and increasing the concentration of solutes.
         </p>
