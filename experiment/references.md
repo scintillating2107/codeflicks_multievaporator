@@ -1,5 +1,5 @@
 <section id="references" style="margin-top: 40px;">
-  <h2>References</h2>
+  
   <ul>
     <li>
       <a href="https://nptel.ac.in/courses/103103035" target="_blank">
