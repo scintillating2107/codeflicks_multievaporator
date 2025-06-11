@@ -6,7 +6,6 @@
 </head>
 <body>
     <section>
-        <h1>Procedure</h1>
         <ol>
             <li>Ensure all valves and gauges are in proper working condition before starting the experiment.</li>
             <li>Switch on the main power supply and open the steam valve to introduce live steam into the first effect of the evaporator.</li>
